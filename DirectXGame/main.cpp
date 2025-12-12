@@ -10,6 +10,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	//初期化
 	KamataEngine::Initialize(L"LC1A_14_タナカ_ミヅキ_AL3");
 	DirectXCommon* dxCommon = DirectXCommon::GetInstance();
+	//ゲームシーン初期化
 	GameScene* gameScene = new GameScene();
 
 	//ループ
