@@ -23,7 +23,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		// ゲームシーンアップデート
 		gameScene->Update();
 
-			//描画開始地点
+		//描画開始地点
 		dxCommon->PreDraw();
 
 		// ゲームシーン描画
