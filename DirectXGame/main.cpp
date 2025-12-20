@@ -39,6 +39,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		// ゲームシーン描画
 		gameScene->Draw();
 
+		AxisIndicator::GetInstance()->Draw();
+
 		imguiManager->Draw();
 
 		// 描画終了地点

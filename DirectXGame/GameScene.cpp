@@ -8,6 +8,7 @@ GameScene::GameScene() { Initialize(); }
 GameScene::~GameScene() {
 	delete sprite_;
 	delete model_;
+	delete debugCamera_;
 }
 
 void GameScene::Initialize() {
@@ -20,9 +21,14 @@ void GameScene::Initialize() {
 	Audio::GetInstance()->PlayWave(soundDataHandle_);
 	voiceHandle_ = Audio::GetInstance()->PlayWave(soundDataHandle_, true);
 	PrimitiveDrawer::GetInstance()->SetCamera(&camera_);
+	debugCamera_ = new DebugCamera(1280, 720);
+	AxisIndicator::GetInstance()->SetVisible(true);
+	AxisIndicator::GetInstance()->SetTargetCamera(&debugCamera_->GetCamera());
 }
 
 void GameScene::Update() {
+
+	debugCamera_->Update();
 
 	Vector2 position = sprite_->GetPosition();
 
@@ -57,7 +63,7 @@ void GameScene::Draw() {
 
 	Model::PreDraw();
 
-	model_->Draw(worldTransform_, camera_, textureHandle_);
+	model_->Draw(worldTransform_, debugCamera_->GetCamera(), textureHandle_);
 
 	Model::PostDraw();
 
