@@ -5,7 +5,7 @@ using namespace KamataEngine;
 GameScene::GameScene() { Initialize(); }
 
 GameScene::~GameScene() { 
-	delete sprite_;
+
 }
 
 void GameScene::Initialize() {
