@@ -9,6 +9,7 @@ GameScene::~GameScene() {
 
 	delete model_;
 	delete modelSkydome_;
+	delete modelPlayer_;
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
 		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
 			delete worldTransformBlock;
@@ -17,6 +18,7 @@ GameScene::~GameScene() {
 
 	worldTransformBlocks_.clear();
 
+	delete player_;
 	delete debugCamera_;
 	delete camera_;
 }
@@ -42,7 +44,7 @@ void GameScene::Initialize() {
 	for (uint32_t i = 0; i < kNumBlockVirtical; ++i) {
 		for (uint32_t j = 0; j < kNumBlockHorizontal; ++j) {
 
-			if ((i + j) % 2 == 1)
+			if ((i + j) % 2 == 0)
 				continue;
 
 			worldTransformBlocks_[i][j] = new WorldTransform();
@@ -51,6 +53,12 @@ void GameScene::Initialize() {
 			worldTransformBlocks_[i][j]->translation_.y = kBlockHeight * i;
 		}
 	}
+
+	modelPlayer_ = Model::CreateFromOBJ("player2", true);
+
+	player_ = new Player();
+
+	player_->Initialize(modelPlayer_, camera_);
 
 	modelSkydome_ = Model::CreateFromOBJ("skydome2", true);
 
@@ -90,6 +98,8 @@ void GameScene::Update() {
 		}
 	}
 
+	player_->Update();
+
 	skydome_->Update();
 
 	if (isDebugCameraActive_) {
@@ -115,6 +125,8 @@ void GameScene::Draw() {
 			model_->Draw(*worldTransformBlock, *camera_);
 		}
 	}
+
+	player_->Draw();
 
 	skydome_->Draw();
 

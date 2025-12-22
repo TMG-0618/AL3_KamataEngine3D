@@ -1,4 +1,4 @@
-#pragma once #pragma once
+#pragma once
 #include "KamataEngine.h"
 
 class Player {
@@ -14,7 +14,7 @@ public:
 	Player();
 	~Player();
 
-	void Initialize(KamataEngine::Model* model, uint32_t textureHandle, KamataEngine::Camera* camera);
+	void Initialize(KamataEngine::Model* model, KamataEngine::Camera* camera);
 	void Update();
 	void Draw();
 };

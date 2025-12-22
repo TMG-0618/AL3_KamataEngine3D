@@ -28,10 +28,10 @@ void Skydome::Update() {
 
 void Skydome::Draw() {
 
-	//model_->PreDraw();
+	model_->PreDraw();
 
 	model_->Draw(worldTransform_, *camera_);
 
-	//model_->PostDraw();
+	model_->PostDraw();
 
 }
