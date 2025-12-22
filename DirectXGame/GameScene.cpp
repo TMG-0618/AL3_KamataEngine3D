@@ -54,7 +54,7 @@ void GameScene::Initialize() {
 		}
 	}
 
-	modelPlayer_ = Model::CreateFromOBJ("player2", true);
+	modelPlayer_ = Model::CreateFromOBJ("player", true);
 
 	player_ = new Player();
 
