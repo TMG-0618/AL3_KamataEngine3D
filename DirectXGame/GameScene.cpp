@@ -10,7 +10,7 @@ GameScene::~GameScene() {
 
 void GameScene::Initialize() {
 
-	grHandle_ = KamataEngine::TextureManager::Load("./Resources/MHbrk.jpg");
+	grHandle_ = TextureManager::Load("./Resources/MHbrk.jpg");
 
 }
 
