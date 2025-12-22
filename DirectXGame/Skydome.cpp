@@ -1,4 +1,5 @@
 #include "Skydome.h"
+#include"MyMath.h"
 
 using namespace KamataEngine;
 
@@ -12,12 +13,14 @@ void Skydome::Initialize(Model* model, Camera* camera) {
 
 	worldTransform_.Initialize();
 
-	camera_ = new Camera();
+	worldTransform_.scale_ = {500.0f, 500.0f, 500.0f};
 
 	camera_ = camera;
 }
 
 void Skydome::Update() {
+
+	worldTransform_.matWorld_ = MyMath::MakeAffinMatrix(worldTransform_.scale_, worldTransform_.rotation_, worldTransform_.translation_);
 
 	worldTransform_.TransferMatrix();
 
@@ -25,10 +28,10 @@ void Skydome::Update() {
 
 void Skydome::Draw() {
 
-	model_->PreDraw();
+	//model_->PreDraw();
 
 	model_->Draw(worldTransform_, *camera_);
 
-	model_->PostDraw();
+	//model_->PostDraw();
 
 }

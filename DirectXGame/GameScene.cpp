@@ -51,7 +51,7 @@ void GameScene::Initialize() {
 		}
 	}
 
-	modelSkydome_ = Model::CreateFromOBJ("skydome", true);
+	modelSkydome_ = Model::CreateFromOBJ("skydome2", true);
 
 	worldTransformSkydome_.Initialize();
 	skydome_ = std::make_unique<Skydome>();
