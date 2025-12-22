@@ -5,6 +5,9 @@ class GameScene {
 
 private:
 
+	int grHandle_ = -1;
+
+
 public:
 	GameScene();
 	~GameScene();
