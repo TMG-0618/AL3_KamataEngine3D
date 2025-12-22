@@ -1,2 +1,18 @@
 #pragma once
-class Skydome {};
+#include "KamataEngine.h"
+
+class Skydome {
+private:
+	KamataEngine::WorldTransform worldTransform_;
+
+	KamataEngine::Model* model_ = nullptr;
+	KamataEngine::Camera* camera_ = nullptr;
+
+public:
+	Skydome();
+	~Skydome();
+
+	void Initialize(KamataEngine::Model* model, const KamataEngine::WorldTransform& worldTransform, KamataEngine::Camera* camera);
+	void Update();
+	void Draw();
+};
