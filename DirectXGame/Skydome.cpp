@@ -22,7 +22,17 @@ void Skydome::Initialize(Model* model, const WorldTransform& worldTransform, Cam
 
 void Skydome::Update() {
 
+	worldTransform_.TransferMatrix();
 
 }
 
-void Skydome::Draw() {}
+void Skydome::Draw() {
+
+	model_->PreDraw();
+
+
+	model_->Draw(worldTransform_, camera_, model_);
+
+	model_->PostDraw();
+
+}
