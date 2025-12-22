@@ -49,10 +49,17 @@ void GameScene::Initialize() {
 	}
 
 	debugCamera_ = new DebugCamera(1280, 720);
-
 }
 
 void GameScene::Update() {
+
+#ifdef _DEBUG
+
+	if (Input::GetInstance()->TriggerKey(DIK_C)) {
+
+		isDebugCameraActive_ = !isDebugCameraActive_;
+	}
+#endif
 
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
 		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
@@ -70,15 +77,11 @@ void GameScene::Update() {
 		}
 	}
 
-	debugCamera_->Update();
-	#ifdef _DEBUG
+	if (isDebugCameraActive_) {
 
-	if (Input::GetInstance()->TriggerKey(DIK_C)) {
-
-		isDebugCameraActive_ = !isDebugCameraActive_;
-
+		debugCamera_->Update();
+		camera_.matView = 
 	}
-#endif
 }
 
 void GameScene::Draw() {
