@@ -6,8 +6,10 @@ class GameScene {
 
 private:
 	KamataEngine::Model* model_ = nullptr;
-
-	std::vector<KamataEngine::WorldTransform*> worldTransformBlocks_;
+	KamataEngine::Camera camera_;
+	std::vector<std::vector<KamataEngine::WorldTransform*>> worldTransformBlocks_;
+	KamataEngine::DebugCamera* debugCamera_ = nullptr;
+	bool isDebugCameraActive_ = false;
 
 public:
 	GameScene();
