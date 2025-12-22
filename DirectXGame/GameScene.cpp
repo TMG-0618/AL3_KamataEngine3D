@@ -80,7 +80,12 @@ void GameScene::Update() {
 	if (isDebugCameraActive_) {
 
 		debugCamera_->Update();
-		camera_.matView = 
+		camera_.matView = debugCamera_->GetCamera().matView;
+		camera_.matProjection = debugCamera_->GetCamera().matProjection;
+
+		camera_.TransferMatrix();
+	} else {
+		camera_.UpdateMatrix();
 	}
 }
 
