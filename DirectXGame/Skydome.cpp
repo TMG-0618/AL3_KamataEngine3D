@@ -20,6 +20,9 @@ void Skydome::Initialize(Model* model, const WorldTransform& worldTransform, Cam
 	camera_ = camera;
 }
 
-void Skydome::Update() {}
+void Skydome::Update() {
+
+
+}
 
 void Skydome::Draw() {}
