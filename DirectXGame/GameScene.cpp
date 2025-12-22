@@ -31,6 +31,7 @@ void GameScene::Initialize() {
 
 	model_ = Model::Create();
 	camera_ = new Camera();
+	camera_->farZ = 2000.0f;
 	camera_->Initialize();
 	worldTransformBlocks_.resize(kNumBlockVirtical);
 	for (uint32_t i = 0; i < kNumBlockVirtical; ++i) {
@@ -59,6 +60,8 @@ void GameScene::Initialize() {
 	skydome_->Initialize(modelSkydome_, camera_);
 
 	debugCamera_ = new DebugCamera(1280, 720);
+
+	debugCamera_->SetFarZ(2000.0f);
 }
 
 void GameScene::Update() {
