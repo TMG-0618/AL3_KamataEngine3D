@@ -8,6 +8,7 @@ GameScene::GameScene() { Initialize(); }
 GameScene::~GameScene() {
 
 	delete model_;
+	delete modelSkydome_;
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
 		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
 			delete worldTransformBlock;
@@ -17,6 +18,7 @@ GameScene::~GameScene() {
 	worldTransformBlocks_.clear();
 
 	delete debugCamera_;
+	delete camera_;
 }
 
 void GameScene::Initialize() {
@@ -28,7 +30,8 @@ void GameScene::Initialize() {
 	const float kBlockHeight = 2.0f;
 
 	model_ = Model::Create();
-	camera_.Initialize();
+	camera_ = new Camera();
+	camera_->Initialize();
 	worldTransformBlocks_.resize(kNumBlockVirtical);
 	for (uint32_t i = 0; i < kNumBlockVirtical; ++i) {
 
@@ -47,6 +50,13 @@ void GameScene::Initialize() {
 			worldTransformBlocks_[i][j]->translation_.y = kBlockHeight * i;
 		}
 	}
+
+	modelSkydome_ = Model::CreateFromOBJ("skydome", true);
+
+	worldTransformSkydome_.Initialize();
+	skydome_ = std::make_unique<Skydome>();
+
+	skydome_->Initialize(modelSkydome_, worldTransformSkydome_, camera_);
 
 	debugCamera_ = new DebugCamera(1280, 720);
 }
@@ -77,15 +87,17 @@ void GameScene::Update() {
 		}
 	}
 
+	skydome_->Update();
+
 	if (isDebugCameraActive_) {
 
 		debugCamera_->Update();
-		camera_.matView = debugCamera_->GetCamera().matView;
-		camera_.matProjection = debugCamera_->GetCamera().matProjection;
+		camera_->matView = debugCamera_->GetCamera().matView;
+		camera_->matProjection = debugCamera_->GetCamera().matProjection;
 
-		camera_.TransferMatrix();
+		camera_->TransferMatrix();
 	} else {
-		camera_.UpdateMatrix();
+		camera_->UpdateMatrix();
 	}
 }
 
@@ -97,9 +109,11 @@ void GameScene::Draw() {
 			if (!worldTransformBlock)
 				continue;
 
-			model_->Draw(*worldTransformBlock, camera_);
+			model_->Draw(*worldTransformBlock, *camera_);
 		}
 	}
+
+	skydome_->Draw();
 
 	model_->PostDraw();
 }
