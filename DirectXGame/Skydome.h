@@ -12,7 +12,7 @@ public:
 	Skydome();
 	~Skydome();
 
-	void Initialize(KamataEngine::Model* model, const KamataEngine::WorldTransform& worldTransform, KamataEngine::Camera* camera);
+	void Initialize(KamataEngine::Model* model, KamataEngine::Camera* camera);
 	void Update();
 	void Draw();
 };

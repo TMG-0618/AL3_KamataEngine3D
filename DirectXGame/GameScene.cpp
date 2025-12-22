@@ -56,7 +56,7 @@ void GameScene::Initialize() {
 	worldTransformSkydome_.Initialize();
 	skydome_ = std::make_unique<Skydome>();
 
-	skydome_->Initialize(modelSkydome_, worldTransformSkydome_, camera_);
+	skydome_->Initialize(modelSkydome_, camera_);
 
 	debugCamera_ = new DebugCamera(1280, 720);
 }

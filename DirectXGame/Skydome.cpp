@@ -6,14 +6,11 @@ Skydome::Skydome() {}
 
 Skydome::~Skydome() {}
 
-void Skydome::Initialize(Model* model, const WorldTransform& worldTransform, Camera* camera) {
+void Skydome::Initialize(Model* model, Camera* camera) {
 	model_ = model;
 
-	worldTransform_.scale_ = worldTransform.scale_;
-	worldTransform_.rotation_ = worldTransform.rotation_;
-	worldTransform_.translation_ = worldTransform.translation_;
-	worldTransform_.matWorld_ = worldTransform.matWorld_;
-	worldTransform_.parent_ = worldTransform.parent_;
+
+	worldTransform_.Initialize();
 
 	camera_ = new Camera();
 
@@ -29,7 +26,6 @@ void Skydome::Update() {
 void Skydome::Draw() {
 
 	model_->PreDraw();
-
 
 	model_->Draw(worldTransform_, *camera_);
 
