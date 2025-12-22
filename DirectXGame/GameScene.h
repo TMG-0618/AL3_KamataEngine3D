@@ -5,7 +5,7 @@ class GameScene {
 
 private:
 
-	int grHandle_ = -1;
+	uint32_t grHandle_ = -1;
 
 
 public:
