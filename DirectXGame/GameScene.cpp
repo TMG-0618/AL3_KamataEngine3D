@@ -19,56 +19,35 @@ GameScene::~GameScene() {
 	worldTransformBlocks_.clear();
 
 	delete player_;
+	delete mapChipField_;
 	delete debugCamera_;
 	delete camera_;
 }
 
 void GameScene::Initialize() {
 
-	const uint32_t kNumBlockVirtical = 10;
-	const uint32_t kNumBlockHorizontal = 20;
+	// マップチップ
+	mapChipField_ = new MapChipField;
+	mapChipField_->LoadMapChipCsv("Resources/blocks.csv");
 
-	const float kBlockWidth = 2.0f;
-	const float kBlockHeight = 2.0f;
+	// ブロック
+	GenerateBlocks();
 
-	model_ = Model::Create();
+	// カメラ
 	camera_ = new Camera();
 	camera_->farZ = 2000.0f;
 	camera_->Initialize();
-	worldTransformBlocks_.resize(kNumBlockVirtical);
-	for (uint32_t i = 0; i < kNumBlockVirtical; ++i) {
 
-		worldTransformBlocks_[i].resize(kNumBlockHorizontal);
-	}
+	// プレイヤー
+	SpawnPlayer();
 
-	for (uint32_t i = 0; i < kNumBlockVirtical; ++i) {
-		for (uint32_t j = 0; j < kNumBlockHorizontal; ++j) {
-
-			if ((i + j) % 2 == 0)
-				continue;
-
-			worldTransformBlocks_[i][j] = new WorldTransform();
-			worldTransformBlocks_[i][j]->Initialize();
-			worldTransformBlocks_[i][j]->translation_.x = kBlockWidth * j;
-			worldTransformBlocks_[i][j]->translation_.y = kBlockHeight * i;
-		}
-	}
-
-	modelPlayer_ = Model::CreateFromOBJ("player", true);
-
-	player_ = new Player();
-
-	player_->Initialize(modelPlayer_, camera_);
-
+	// 天球
 	modelSkydome_ = Model::CreateFromOBJ("skydome2", true);
-
-	worldTransformSkydome_.Initialize();
 	skydome_ = std::make_unique<Skydome>();
-
 	skydome_->Initialize(modelSkydome_, camera_);
 
+	// デバッグカメラ
 	debugCamera_ = new DebugCamera(1280, 720);
-
 	debugCamera_->SetFarZ(2000.0f);
 }
 
@@ -131,4 +110,48 @@ void GameScene::Draw() {
 	skydome_->Draw();
 
 	model_->PostDraw();
+}
+
+void GameScene::GenerateBlocks() {
+	const uint32_t kNumBlockVirtical = mapChipField_->GetNumBlockVirtical();
+	const uint32_t kNumBlockHorizontal = mapChipField_->GetNumBlockHorizontal();
+
+	model_ = Model::CreateFromOBJ("block2",true);
+	worldTransformBlocks_.resize(kNumBlockVirtical);
+	for (uint32_t i = 0; i < kNumBlockVirtical; ++i) {
+
+		worldTransformBlocks_[i].resize(kNumBlockHorizontal);
+	}
+
+	for (uint32_t i = 0; i < kNumBlockVirtical; ++i) {
+		for (uint32_t j = 0; j < kNumBlockHorizontal; ++j) {
+
+			if (mapChipField_->GetMapChipTypeByIndex(j, i) == MapChipType::kBlock) {
+
+				worldTransformBlocks_[i][j] = new WorldTransform();
+				worldTransformBlocks_[i][j]->Initialize();
+				worldTransformBlocks_[i][j]->translation_ = mapChipField_->GetMapChipPositionByIndex(j, i);
+			}
+		}
+	}
+}
+
+void GameScene::SpawnPlayer() {
+
+	modelPlayer_ = Model::CreateFromOBJ("player", true);
+	player_ = new Player();
+	player_->Initialize(modelPlayer_, camera_);
+
+	const uint32_t kNumBlockVirtical = mapChipField_->GetNumBlockVirtical();
+	const uint32_t kNumBlockHorizontal = mapChipField_->GetNumBlockHorizontal();
+
+	for (uint32_t i = 0; i < kNumBlockVirtical; ++i) {
+		for (uint32_t j = 0; j < kNumBlockHorizontal; ++j) {
+
+			if (mapChipField_->GetMapChipTypeByIndex(j, i) == MapChipType::kPlayer) {
+				player_->SetTranslation(mapChipField_->GetMapChipPositionByIndex(j,i));
+				return;
+			}
+		}
+	}
 }
