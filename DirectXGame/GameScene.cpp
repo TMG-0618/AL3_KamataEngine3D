@@ -140,18 +140,8 @@ void GameScene::SpawnPlayer() {
 
 	modelPlayer_ = Model::CreateFromOBJ("player", true);
 	player_ = new Player();
-	player_->Initialize(modelPlayer_, camera_);
 
-	const uint32_t kNumBlockVirtical = mapChipField_->GetNumBlockVirtical();
-	const uint32_t kNumBlockHorizontal = mapChipField_->GetNumBlockHorizontal();
+	Vector3 playerPosition = mapChipField_->GetMapChipPositionByIndex(1, 18);
+	player_->Initialize(modelPlayer_, camera_,playerPosition);
 
-	for (uint32_t i = 0; i < kNumBlockVirtical; ++i) {
-		for (uint32_t j = 0; j < kNumBlockHorizontal; ++j) {
-
-			if (mapChipField_->GetMapChipTypeByIndex(j, i) == MapChipType::kPlayer) {
-				player_->SetTranslation(mapChipField_->GetMapChipPositionByIndex(j,i));
-				return;
-			}
-		}
-	}
 }
