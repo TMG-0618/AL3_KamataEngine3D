@@ -41,6 +41,13 @@ void GameScene::Initialize() {
 	// プレイヤー
 	SpawnPlayer();
 
+	//カメラコントローラー
+	cameraController_ = new CameraController();
+	cameraController_->Initialize(camera_);
+	cameraController_->SetTarget(player_);
+	cameraController_->Reset();
+	cameraController_->SetMovableArea({10.0f, 90.0f, 5.0f, 15.0f});
+
 	// 天球
 	modelSkydome_ = Model::CreateFromOBJ("skydome2", true);
 	skydome_ = std::make_unique<Skydome>();
@@ -60,6 +67,8 @@ void GameScene::Update() {
 		isDebugCameraActive_ = !isDebugCameraActive_;
 	}
 #endif
+
+
 
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
 		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
@@ -81,6 +90,8 @@ void GameScene::Update() {
 
 	skydome_->Update();
 
+	cameraController_->Update();
+
 	if (isDebugCameraActive_) {
 
 		debugCamera_->Update();
@@ -89,6 +100,7 @@ void GameScene::Update() {
 
 		camera_->TransferMatrix();
 	} else {
+		camera_ = cameraController_->GetCamera();
 		camera_->UpdateMatrix();
 	}
 }

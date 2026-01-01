@@ -44,4 +44,6 @@ public:
 	void Draw();
 
 	void SetTranslation(KamataEngine::Vector3 newTranslation) { worldTransform_.translation_ = newTranslation; };
+
+	KamataEngine::WorldTransform& GetWorldTransform() { return worldTransform_; }
 };

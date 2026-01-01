@@ -1,8 +1,9 @@
 #pragma once
+#include "CameraController.h"
 #include "KamataEngine.h"
+#include "MapChipField.h"
+#include "Player.h"
 #include "Skydome.h"
-#include"Player.h"
-#include"MapChipField.h"
 #include <memory>
 #include <vector>
 
@@ -22,6 +23,7 @@ private:
 	KamataEngine::Model* modelPlayer_ = nullptr;
 
 	MapChipField* mapChipField_;
+	CameraController* cameraController_ = nullptr;
 
 public:
 	GameScene();
