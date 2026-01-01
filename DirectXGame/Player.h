@@ -31,9 +31,9 @@ private:
 
 	bool onGround_ = true;
 
-	static inline const float kGravityAcceleration = 9.8f;
+	static inline const float kGravityAcceleration = 2.45f;
 	static inline const float kLimitFallSpeed = 1.0f;
-	static inline const float kJumpAcceleration = 1.0f;
+	static inline const float kJumpAcceleration = 0.5f;
 
 public:
 	Player();
