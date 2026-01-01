@@ -9,6 +9,7 @@ private:
 	Player* target_ = nullptr;
 
 	KamataEngine::Vector3 tagetOffset_ = {0.0f, 0.0f, -15.0f};
+	KamataEngine::Vector3 targetpos_;
 	KamataEngine::Camera* camera_ = nullptr;
 
 	struct Rect {
@@ -20,8 +21,11 @@ private:
 
 	Rect movableArea_ = {0.0f, 100.0f, 0.0f, 100.0f};
 
-public:
-	CameraController();
+	static inline const float kInterpolationRate = 0.1f;
+	static inline const float kVelocityBias = 15.0f;
+	static inline const Rect margin = {-10.0f, 10.0f, -5.0f, 5.0f};
+
+	public : CameraController();
 	~CameraController();
 	void Initialize(KamataEngine::Camera* camera);
 	void Update();

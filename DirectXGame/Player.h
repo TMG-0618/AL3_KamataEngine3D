@@ -35,6 +35,7 @@ private:
 	static inline const float kLimitFallSpeed = 1.0f;
 	static inline const float kJumpAcceleration = 0.5f;
 
+
 public:
 	Player();
 	~Player();
@@ -46,4 +47,5 @@ public:
 	void SetTranslation(KamataEngine::Vector3 newTranslation) { worldTransform_.translation_ = newTranslation; };
 
 	KamataEngine::WorldTransform& GetWorldTransform() { return worldTransform_; }
+	const KamataEngine::Vector3& GetVelocity() const { return velocity_; }
 };

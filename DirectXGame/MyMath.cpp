@@ -75,6 +75,15 @@ Vector3 MyMath::Normalize(const Vector3& v) {
 	return result;
 }
 
+Vector3 MyMath::Lerp(const Vector3& startPos, const Vector3& endPos, float t) {
+	Vector3 result;
+	result.x = (1.0f - t) * startPos.x + t * endPos.x;
+	result.y = (1.0f - t) * startPos.y + t * endPos.y;
+	result.z = (1.0f - t) * startPos.z + t * endPos.z;
+
+	return result;
+}
+
 
 //Matrix4x4
 void MyMath::InitializeMatrix4x4(KamataEngine::Matrix4x4& matrix) {

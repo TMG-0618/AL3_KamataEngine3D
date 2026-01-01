@@ -14,6 +14,7 @@ public:
 	static float Dot(const KamataEngine::Vector3& v1, const KamataEngine::Vector3& v2);
 	static float Length(const KamataEngine::Vector3& v);
 	static KamataEngine::Vector3 Normalize(const KamataEngine::Vector3& v);
+	static KamataEngine::Vector3 Lerp(const KamataEngine::Vector3& startPos, const KamataEngine::Vector3& endPos, float t);
 
 	//Matrix4x4
 	
