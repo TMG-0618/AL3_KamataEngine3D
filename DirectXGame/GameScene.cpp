@@ -41,6 +41,8 @@ void GameScene::Initialize() {
 	// プレイヤー
 	SpawnPlayer();
 
+	player_->SetMapChipField(mapChipField_);
+
 	//カメラコントローラー
 	cameraController_ = new CameraController();
 	cameraController_->Initialize(camera_);
@@ -86,11 +88,11 @@ void GameScene::Update() {
 		}
 	}
 
+	cameraController_->Update();
 	player_->Update();
 
 	skydome_->Update();
 
-	cameraController_->Update();
 
 	if (isDebugCameraActive_) {
 

@@ -23,6 +23,20 @@ private:
 	MapChipData mapChipData_;
 
 public:
+	struct IndexSet {
+		uint32_t xIndex;
+		uint32_t yIndex;
+	};
+
+	struct Rect {
+	
+		float left;
+		float right;
+		float bottom;
+		float top;
+	};
+
+public:
 
 	void ResetMapChipData();
 
@@ -32,7 +46,10 @@ public:
 
 	KamataEngine::Vector3 GetMapChipPositionByIndex(uint32_t xIndex, uint32_t yIndex);
 
-	//Getter
-	uint32_t GetNumBlockVirtical() { return kNumBlockVirtical;};
-	uint32_t GetNumBlockHorizontal() { return kNumBlockHorizontal;};
+	// Getter
+	uint32_t GetNumBlockVirtical() { return kNumBlockVirtical; };
+	uint32_t GetNumBlockHorizontal() { return kNumBlockHorizontal; };
+	IndexSet GetmapChipIndexSetByPosition(const KamataEngine::Vector3& position);
+	Rect GetRectByIndex(uint32_t xIndex, uint32_t yIndex);
+
 };
