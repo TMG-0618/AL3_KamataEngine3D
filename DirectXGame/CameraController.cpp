@@ -14,7 +14,9 @@ void CameraController::Initialize(KamataEngine::Camera* camera) { camera_ = came
 void CameraController::Update() {
 
 	const WorldTransform& targetWorldTransform = target_->GetWorldTransform();
-	targetpos_ = MyMath::Add(targetWorldTransform.translation_, MyMath::Add(tagetOffset_, MyMath::Multiply(kVelocityBias,target_->GetVelocity())));
+	targetpos_.x = targetWorldTransform.translation_.x + tagetOffset_.x + kVelocityBias * target_->GetVelocity().x;
+	targetpos_.y = targetWorldTransform.translation_.y + tagetOffset_.y;
+	targetpos_.z = targetWorldTransform.translation_.z + tagetOffset_.z + kVelocityBias * target_->GetVelocity().z;
 
 	camera_->translation_ = MyMath::Lerp(camera_->translation_, targetpos_, kInterpolationRate);
 

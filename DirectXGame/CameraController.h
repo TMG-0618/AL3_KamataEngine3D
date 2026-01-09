@@ -9,7 +9,7 @@ private:
 	Player* target_ = nullptr;
 
 	KamataEngine::Vector3 tagetOffset_ = {0.0f, 0.0f, -15.0f};
-	KamataEngine::Vector3 targetpos_;
+	KamataEngine::Vector3 targetpos_ = {};
 	KamataEngine::Camera* camera_ = nullptr;
 
 	struct Rect {

@@ -45,7 +45,7 @@ private:
 	static inline const float kTimeTurn = 0.3f;
 
 	bool onGround_ = true;
-	static inline const float kGravityAcceleration = 2.0f;
+	static inline const float kGravityAcceleration = 1.0f;
 	static inline const float kLimitFallSpeed = 1.0f;
 	static inline const float kJumpAcceleration = 0.4f;
 
@@ -55,6 +55,9 @@ private:
 	MapChipField* mapChipField_ = nullptr;
 
 	static inline const float kBlank = 0.0001f;
+
+	static inline const float kAttenuationLanding = 0.2f;
+	static inline const float kAttenuationWall = 0.2f;
 
 public:
 	Player();
@@ -76,11 +79,14 @@ public:
 	void CheckHitRight(CollisionMapInfo& info);
 	void CheckHitLeft(CollisionMapInfo& info);
 
+
 	KamataEngine::Vector3 CornerPosition(const KamataEngine::Vector3& center, Corner corner);
 
 	void ResolveMovement(const CollisionMapInfo& info);
+	void SwitchLandingState(const CollisionMapInfo& info);
 
 	void ResolveCeilingCollision(const CollisionMapInfo& info);
+	void ResolveWallCollision(const CollisionMapInfo& info);
 
 	KamataEngine::WorldTransform& GetWorldTransform() { return worldTransform_; }
 	const KamataEngine::Vector3& GetVelocity() const { return velocity_; }
