@@ -45,7 +45,7 @@ private:
 	static inline const float kTimeTurn = 0.3f;
 
 	bool onGround_ = true;
-	static inline const float kGravityAcceleration = 1.2f;
+	static inline const float kGravityAcceleration = 2.0f;
 	static inline const float kLimitFallSpeed = 1.0f;
 	static inline const float kJumpAcceleration = 0.4f;
 

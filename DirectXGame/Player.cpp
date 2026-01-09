@@ -182,14 +182,14 @@ void Player::CheckHitTop(CollisionMapInfo& info) {
 	MapChipField::IndexSet indexSet;
 
 	indexSet = mapChipField_->GetmapChipIndexSetByPosition(positionsNew[kLeftTop]);
-	mapChipType = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
+	mapChipType = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex+1);
 	if (mapChipType == MapChipType::kBlock) {
 
 		hit = true;
 	}
 
 	indexSet = mapChipField_->GetmapChipIndexSetByPosition(positionsNew[kRightTop]);
-	mapChipType = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
+	mapChipType = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex+1);
 	if (mapChipType == MapChipType::kBlock) {
 
 		hit = true;
@@ -200,7 +200,7 @@ void Player::CheckHitTop(CollisionMapInfo& info) {
 		indexSet = mapChipField_->GetmapChipIndexSetByPosition(positionsNew[kRightTop]);
 
 		MapChipField::Rect rect = mapChipField_->GetRectByIndex(indexSet.xIndex, indexSet.yIndex);
-		info.moveAmount.y = std::max(0.0f, rect.bottom - worldTransform_.translation_.y - (kHeight / 2.0f + kBlank));
+		info.moveAmount.y = std::min(0.0f, rect.bottom - worldTransform_.translation_.y - (kHeight / 2.0f + kBlank));
 
 		info.isHitCeiling = true;
 	}
