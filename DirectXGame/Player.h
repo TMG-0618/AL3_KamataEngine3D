@@ -59,6 +59,8 @@ private:
 	static inline const float kAttenuationLanding = 0.2f;
 	static inline const float kAttenuationWall = 0.2f;
 
+	bool justLanded_ = false;
+
 public:
 	Player();
 	~Player();
