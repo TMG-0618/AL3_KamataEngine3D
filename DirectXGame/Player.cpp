@@ -187,8 +187,6 @@ void Player::CheckHitTop(CollisionMapInfo& info) {
 
 void Player::CheckHitBottom(CollisionMapInfo& info) {
 
-	info;
-
 	if (info.moveAmount.y >= 0.0f) {
 
 		return;
@@ -242,7 +240,6 @@ void Player::CheckHitBottom(CollisionMapInfo& info) {
 }
 
 void Player::CheckHitRight(CollisionMapInfo& info) {
-	info;
 
 	if (info.moveAmount.x <= 0.0f) {
 
@@ -294,7 +291,6 @@ void Player::CheckHitRight(CollisionMapInfo& info) {
 }
 
 void Player::CheckHitLeft(CollisionMapInfo& info) {
-	info;
 
 	if (info.moveAmount.x >= 0.0f) {
 
