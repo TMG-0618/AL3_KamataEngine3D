@@ -332,7 +332,7 @@ void Player::CheckHitLeft(CollisionMapInfo& info) {
 
 		if (indexSetNow.xIndex != indexSet.xIndex) {
 			MapChipField::Rect rect = mapChipField_->GetRectByIndex(indexSet.xIndex, indexSet.yIndex);
-			info.moveAmount.x = std::max(0.0f, rect.right - worldTransform_.translation_.x - (kWidth / 2.0f + kBlank));
+			info.moveAmount.x = std::max(0.0f, rect.right - worldTransform_.translation_.x + (kWidth / 2.0f + kBlank));
 
 			info.isHitWall = true;
 		}
@@ -384,14 +384,16 @@ void Player::SwitchLandingState(const CollisionMapInfo& info) {
 
 			MapChipField::IndexSet indexSet;
 
-			indexSet = mapChipField_->GetmapChipIndexSetByPosition(MyMath::Add(positionsNew[kLeftBottom], {0, -kHeight / 2.0f + kBlank, 0}));
+			float checkOffset = {kBlank + 0.03f};
+
+			indexSet = mapChipField_->GetmapChipIndexSetByPosition(MyMath::Add(positionsNew[kLeftBottom], {0, -checkOffset, 0}));
 			mapChipType = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
 			if (mapChipType == MapChipType::kBlock) {
 
 				hit = true;
 			}
 
-			indexSet = mapChipField_->GetmapChipIndexSetByPosition(MyMath::Add(positionsNew[kRightBottom], {0, -kHeight / 2.0f + kBlank, 0}));
+			indexSet = mapChipField_->GetmapChipIndexSetByPosition(MyMath::Add(positionsNew[kRightBottom], {0, -checkOffset, 0}));
 			mapChipType = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
 			if (mapChipType == MapChipType::kBlock) {
 
