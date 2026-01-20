@@ -383,7 +383,6 @@ void Player::SwitchLandingState(const CollisionMapInfo& info) {
 			bool hit = false;
 
 			MapChipField::IndexSet indexSet;
-
 			float checkOffset = {kBlank + 0.03f};
 
 			indexSet = mapChipField_->GetmapChipIndexSetByPosition(MyMath::Add(positionsNew[kLeftBottom], {0, -checkOffset, 0}));
