@@ -4,12 +4,14 @@
 #include "MapChipField.h"
 #include "Player.h"
 #include "Skydome.h"
+#include"Enemy.h"
 #include <memory>
 #include <vector>
 
 class GameScene {
 
 private:
+
 	KamataEngine::Model* model_ = nullptr;
 	KamataEngine::Camera* camera_;
 	std::vector<std::vector<KamataEngine::WorldTransform*>> worldTransformBlocks_;
@@ -25,7 +27,11 @@ private:
 	MapChipField* mapChipField_;
 	CameraController* cameraController_ = nullptr;
 
+	std::unique_ptr<Enemy> enemy_;
+	KamataEngine::Model* modelEnemy_ = nullptr;
+
 public:
+
 	GameScene();
 	~GameScene();
 
