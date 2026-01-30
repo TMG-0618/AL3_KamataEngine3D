@@ -17,6 +17,11 @@ GameScene::~GameScene() {
 		}
 	}
 
+	for (int32_t i = 0; i < 3; ++i) {
+		delete enemies_.front();
+		enemies_.pop_front();
+	}
+
 	worldTransformBlocks_.clear();
 
 	delete player_;
@@ -44,13 +49,18 @@ void GameScene::Initialize() {
 
 	player_->SetMapChipField(mapChipField_);
 
-	//敵
-	enemy_ = std::make_unique<Enemy>();
+	// 敵
 	modelEnemy_ = Model::CreateFromOBJ("Enemy", true);
-	Vector3 enemyPosition = mapChipField_->GetMapChipPositionByIndex(8, 18);
-	enemy_->Initialize(modelEnemy_, camera_, enemyPosition);
+	for (int32_t i = 0; i < 3; ++i) {
 
-	//カメラコントローラー
+		Enemy* newEnemy = new Enemy();
+		Vector3 enemyPosition = mapChipField_->GetMapChipPositionByIndex( 5 + 5 * i, 18 - 2 * i);
+		newEnemy->Initialize(modelEnemy_, camera_, enemyPosition);
+
+		enemies_.push_back(newEnemy);
+	}
+
+	// カメラコントローラー
 	cameraController_ = new CameraController();
 	cameraController_->Initialize(camera_);
 	cameraController_->SetTarget(player_);
@@ -77,8 +87,6 @@ void GameScene::Update() {
 	}
 #endif
 
-
-
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
 		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
 
@@ -98,11 +106,11 @@ void GameScene::Update() {
 	cameraController_->Update();
 	player_->Update();
 
-	if (enemy_) {
-		enemy_->Update();
+	for (Enemy* enemy : enemies_) {
+		enemy->Update();
 	}
-	skydome_->Update();
 
+	skydome_->Update();
 
 	if (isDebugCameraActive_) {
 
@@ -131,8 +139,9 @@ void GameScene::Draw() {
 
 	player_->Draw();
 
-	if (enemy_) {
-		enemy_->Draw();
+
+	for (Enemy* enemy : enemies_) {
+		enemy->Draw();
 	}
 
 	skydome_->Draw();
@@ -144,7 +153,7 @@ void GameScene::GenerateBlocks() {
 	const uint32_t kNumBlockVirtical = mapChipField_->GetNumBlockVirtical();
 	const uint32_t kNumBlockHorizontal = mapChipField_->GetNumBlockHorizontal();
 
-	model_ = Model::CreateFromOBJ("block2",true);
+	model_ = Model::CreateFromOBJ("block2", true);
 	worldTransformBlocks_.resize(kNumBlockVirtical);
 	for (uint32_t i = 0; i < kNumBlockVirtical; ++i) {
 
@@ -170,6 +179,5 @@ void GameScene::SpawnPlayer() {
 	player_ = new Player();
 
 	Vector3 playerPosition = mapChipField_->GetMapChipPositionByIndex(1, 18);
-	player_->Initialize(modelPlayer_, camera_,playerPosition);
-
+	player_->Initialize(modelPlayer_, camera_, playerPosition);
 }

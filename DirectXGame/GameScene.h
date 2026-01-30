@@ -27,7 +27,7 @@ private:
 	MapChipField* mapChipField_;
 	CameraController* cameraController_ = nullptr;
 
-	std::unique_ptr<Enemy> enemy_;
+	std::list<Enemy*> enemies_;
 	KamataEngine::Model* modelEnemy_ = nullptr;
 
 public:
