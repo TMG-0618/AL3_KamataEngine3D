@@ -5,6 +5,7 @@
 #include "Player.h"
 #include "Skydome.h"
 #include"Enemy.h"
+#include"AABB.h"
 #include <memory>
 #include <vector>
 
@@ -41,4 +42,7 @@ public:
 
 	void GenerateBlocks();
 	void SpawnPlayer();
+
+	void CheckAllCollisions();
+	bool AABBCheckCollision(AABB& aabb1,AABB& aabb2);
 };

@@ -436,3 +436,22 @@ Vector3 Player::GetWorldPosition() {
 	return worldPos;
 }
 
+AABB Player::GetAABB() {
+
+	Vector3 worldPos = GetWorldPosition();
+
+	AABB aabb;
+
+	aabb.min = {worldPos.x - kWidth / 2.0f, worldPos.y - kHeight / 2.0f, worldPos.x - kWidth / 2.0f};
+	aabb.max = {worldPos.x + kWidth / 2.0f, worldPos.y + kHeight / 2.0f, worldPos.x + kWidth / 2.0f};
+
+	return aabb;
+}
+
+void Player::OnCollision(const Enemy* enemy) {
+
+	(void)enemy;
+
+	velocity_ = MyMath::Add(velocity_, Vector3({0.0f, 1.0f, 0.0f}));
+
+}

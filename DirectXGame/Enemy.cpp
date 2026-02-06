@@ -1,7 +1,7 @@
 #include "Enemy.h"
-#include"MyMath.h"
+#include "MyMath.h"
+#include <assert.h>
 #include <numbers>
-#include<assert.h>
 
 using namespace KamataEngine;
 
@@ -30,11 +30,10 @@ void Enemy::Update() {
 	float degree = kWalkMotionAngleStart + kWalkMotionAngleEnd * (param + 1.0f) / 2.0f;
 	worldTransform_.rotation_.x = degree / 180.0f * std::numbers::pi_v<float>;
 
-	//ワールド行列の更新
+	// ワールド行列の更新
 	worldTransform_.matWorld_ = MyMath::MakeAffinMatrix(worldTransform_.scale_, worldTransform_.rotation_, worldTransform_.translation_);
 
 	worldTransform_.TransferMatrix();
-
 }
 
 void Enemy::Draw() {
@@ -44,3 +43,27 @@ void Enemy::Draw() {
 
 	model_->PostDraw();
 }
+
+KamataEngine::Vector3 Enemy::GetWorldPosition() {
+
+	Vector3 worldPos;
+
+	worldPos.x = worldTransform_.matWorld_.m[3][0];
+	worldPos.y = worldTransform_.matWorld_.m[3][1];
+	worldPos.z = worldTransform_.matWorld_.m[3][2];
+
+	return worldPos;
+}
+
+AABB Enemy::GetAABB() {
+	Vector3 worldPos = GetWorldPosition();
+
+	AABB aabb;
+
+	aabb.min = {worldPos.x - kWidth / 2.0f, worldPos.y - kHeight / 2.0f, worldPos.x - kWidth / 2.0f};
+	aabb.max = {worldPos.x + kWidth / 2.0f, worldPos.y + kHeight / 2.0f, worldPos.x + kWidth / 2.0f};
+
+	return aabb;
+}
+
+void Enemy::OnCollision(const Player* player) { (void)player; }

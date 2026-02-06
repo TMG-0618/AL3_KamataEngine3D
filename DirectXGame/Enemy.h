@@ -1,11 +1,12 @@
 #pragma once
-#include"KamataEngine.h"
+#include "AABB.h"
+#include "KamataEngine.h"
 
+class Player;
 
 class Enemy {
 
 private:
-
 	KamataEngine::WorldTransform worldTransform_;
 	KamataEngine::Model* model_ = nullptr;
 	KamataEngine::Camera* camera_ = nullptr;
@@ -20,8 +21,10 @@ private:
 
 	float walkTimer_ = 0.0f;
 
-public:
+	static inline const float kWidth = 0.8f;
+	static inline const float kHeight = 0.8f;
 
+public:
 	Enemy();
 	~Enemy();
 
@@ -29,4 +32,8 @@ public:
 	void Update();
 	void Draw();
 
+	KamataEngine::Vector3 GetWorldPosition();
+	AABB GetAABB();
+
+	void OnCollision(const Player* player);
 };

@@ -54,7 +54,7 @@ void GameScene::Initialize() {
 	for (int32_t i = 0; i < 3; ++i) {
 
 		Enemy* newEnemy = new Enemy();
-		Vector3 enemyPosition = mapChipField_->GetMapChipPositionByIndex( 5 + 5 * i, 18 - 2 * i);
+		Vector3 enemyPosition = mapChipField_->GetMapChipPositionByIndex(5 + 5 * i, 18 - 2 * i);
 		newEnemy->Initialize(modelEnemy_, camera_, enemyPosition);
 
 		enemies_.push_back(newEnemy);
@@ -123,6 +123,8 @@ void GameScene::Update() {
 		camera_ = cameraController_->GetCamera();
 		camera_->UpdateMatrix();
 	}
+
+	CheckAllCollisions();
 }
 
 void GameScene::Draw() {
@@ -138,7 +140,6 @@ void GameScene::Draw() {
 	}
 
 	player_->Draw();
-
 
 	for (Enemy* enemy : enemies_) {
 		enemy->Draw();
@@ -180,4 +181,36 @@ void GameScene::SpawnPlayer() {
 
 	Vector3 playerPosition = mapChipField_->GetMapChipPositionByIndex(1, 18);
 	player_->Initialize(modelPlayer_, camera_, playerPosition);
+}
+
+void GameScene::CheckAllCollisions() {
+
+#pragma region 自キャラと敵キャラの当たり判定
+	{
+		AABB aabb1, aabb2;
+
+		aabb1 = player_->GetAABB();
+
+		for (Enemy* enemy : enemies_) {
+
+			aabb2 = enemy->GetAABB();
+
+			if (AABBCheckCollision(aabb1,aabb2)) {
+				player_->OnCollision(enemy);
+
+				enemy->OnCollision(player_);
+			}
+		}
+	}
+#pragma endregion
+}
+
+bool GameScene::AABBCheckCollision(AABB& aabb1, AABB& aabb2) {
+
+	if ((aabb1.min.x <= aabb2.max.x && aabb1.max.x >= aabb2.min.x) && 
+		(aabb1.min.y <= aabb2.max.y && aabb1.max.y >= aabb2.min.y) && 
+		(aabb1.min.z <= aabb2.max.z && aabb1.max.z >= aabb2.min.z)) {
+		return true;
+	}
+	return false;
 }

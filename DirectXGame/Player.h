@@ -1,19 +1,15 @@
 #pragma once
 #include "KamataEngine.h"
-
+#include"AABB.h"
 
 enum class LRDirection {
 	kRight,
 	kLeft,
 };
 
-struct AABB {
-
-	KamataEngine::Vector3 min = {};
-	KamataEngine::Vector3 max = {};
-};
-
 class MapChipField;
+
+class Enemy;
 
 class Player {
 
@@ -102,4 +98,6 @@ public:
 
 	KamataEngine::Vector3 GetWorldPosition();
 	AABB GetAABB();
+
+	void OnCollision(const Enemy* enemy);
 };
