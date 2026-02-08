@@ -28,6 +28,7 @@ GameScene::~GameScene() {
 	delete mapChipField_;
 	delete debugCamera_;
 	delete camera_;
+	delete deathParticles_;
 }
 
 void GameScene::Initialize() {
@@ -59,6 +60,9 @@ void GameScene::Initialize() {
 
 		enemies_.push_back(newEnemy);
 	}
+	deathParticles_ = new DeathParticles();
+	modelDeathParticles_ = Model::CreateFromOBJ("deathParticle", true);
+	deathParticles_->Initialize(modelDeathParticles_, camera_, player_->GetWorldPosition());
 
 	// カメラコントローラー
 	cameraController_ = new CameraController();
@@ -66,6 +70,8 @@ void GameScene::Initialize() {
 	cameraController_->SetTarget(player_);
 	cameraController_->Reset();
 	cameraController_->SetMovableArea({10.0f, 90.0f, 5.0f, 15.0f});
+
+
 
 	// 天球
 	modelSkydome_ = Model::CreateFromOBJ("skydome2", true);
@@ -110,6 +116,11 @@ void GameScene::Update() {
 		enemy->Update();
 	}
 
+	if (deathParticles_) {
+
+		deathParticles_->Update();
+	}
+
 	skydome_->Update();
 
 	if (isDebugCameraActive_) {
@@ -129,6 +140,7 @@ void GameScene::Update() {
 
 void GameScene::Draw() {
 
+	skydome_->Draw();
 	model_->PreDraw();
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
 		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
@@ -138,6 +150,7 @@ void GameScene::Draw() {
 			model_->Draw(*worldTransformBlock, *camera_);
 		}
 	}
+	model_->PostDraw();
 
 	player_->Draw();
 
@@ -145,9 +158,12 @@ void GameScene::Draw() {
 		enemy->Draw();
 	}
 
-	skydome_->Draw();
+	if (deathParticles_) {
+		deathParticles_->Draw();
+	}
 
-	model_->PostDraw();
+
+
 }
 
 void GameScene::GenerateBlocks() {

@@ -6,6 +6,7 @@
 #include "Skydome.h"
 #include"Enemy.h"
 #include"AABB.h"
+#include"DeathParticles.h"
 #include <memory>
 #include <vector>
 
@@ -30,6 +31,9 @@ private:
 
 	std::list<Enemy*> enemies_;
 	KamataEngine::Model* modelEnemy_ = nullptr;
+
+	DeathParticles* deathParticles_ = nullptr;
+	KamataEngine::Model* modelDeathParticles_ = nullptr;
 
 public:
 

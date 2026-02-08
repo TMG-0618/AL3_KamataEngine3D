@@ -21,6 +21,9 @@ void Player::Initialize(Model* model, Camera* camera, const Vector3& position) {
 	worldTransform_.Initialize();
 	worldTransform_.translation_ = position;
 	worldTransform_.rotation_.y = std::numbers::pi_v<float> / 2.0f;
+	worldTransform_.matWorld_ = MyMath::MakeAffinMatrix(worldTransform_.scale_, worldTransform_.rotation_, worldTransform_.translation_);
+
+	worldTransform_.TransferMatrix();
 }
 
 void Player::Update() {
@@ -452,6 +455,6 @@ void Player::OnCollision(const Enemy* enemy) {
 
 	(void)enemy;
 
-	velocity_ = MyMath::Add(velocity_, Vector3({0.0f, 1.0f, 0.0f}));
+	velocity_ = MyMath::Add(velocity_, Vector3({0.0f, 0.0f, 0.0f}));
 
 }
