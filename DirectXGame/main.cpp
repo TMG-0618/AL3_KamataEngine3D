@@ -6,22 +6,19 @@
 using namespace KamataEngine;
 
 enum class Scene {
-
 	kUnknown = 0,
+	
 	kTitle,
 	kGame,
-
 };
 
 Scene scene = Scene::kUnknown;
-
 GameScene* gameScene = nullptr;
 TitleScene* titleScene = nullptr;
 
+//プロトタイプ宣言
 void ChangeScene();
-
 void UpdateScene();
-
 void DrawScene();
 
 // Windowsアプリでのエントリーポイント(main関数)
