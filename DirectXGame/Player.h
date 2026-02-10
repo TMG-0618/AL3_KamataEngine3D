@@ -64,6 +64,8 @@ private:
 
 	bool justLanded_ = false;
 
+	bool isDead_ = false;
+
 public:
 	Player();
 	~Player();
@@ -100,4 +102,6 @@ public:
 	AABB GetAABB();
 
 	void OnCollision(const Enemy* enemy);
+
+	bool IsDead() const { return isDead_; }
 };

@@ -10,6 +10,11 @@
 #include <memory>
 #include <vector>
 
+enum class Phase {
+	kPlay,
+	kDeath,
+};
+
 class GameScene {
 
 private:
@@ -35,6 +40,8 @@ private:
 	DeathParticles* deathParticles_ = nullptr;
 	KamataEngine::Model* modelDeathParticles_ = nullptr;
 
+	Phase phase_;
+
 public:
 
 	GameScene();
@@ -49,4 +56,6 @@ public:
 
 	void CheckAllCollisions();
 	bool AABBCheckCollision(AABB& aabb1,AABB& aabb2);
+
+	void ChangePhase();
 };

@@ -64,6 +64,10 @@ void Player::Update() {
 }
 
 void Player::Draw() {
+
+	if (isDead_)
+		return;
+
 	model_->PreDraw();
 
 	model_->Draw(worldTransform_, *camera_);
@@ -161,14 +165,14 @@ void Player::CheckHitTop(CollisionMapInfo& info) {
 	indexSet = mapChipField_->GetmapChipIndexSetByPosition(positionsNew[kLeftTop]);
 	mapChipType = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
 	mapChipTypeNext = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex + 1);
-	if (mapChipType == MapChipType::kBlock && mapChipTypeNext != MapChipType::kBlock){
+	if (mapChipType == MapChipType::kBlock && mapChipTypeNext != MapChipType::kBlock) {
 		hit = true;
 	}
 
 	indexSet = mapChipField_->GetmapChipIndexSetByPosition(positionsNew[kRightTop]);
 	mapChipType = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
 	mapChipTypeNext = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex + 1);
-	if (mapChipType == MapChipType::kBlock && mapChipTypeNext != MapChipType::kBlock){
+	if (mapChipType == MapChipType::kBlock && mapChipTypeNext != MapChipType::kBlock) {
 		hit = true;
 	}
 
@@ -455,6 +459,7 @@ void Player::OnCollision(const Enemy* enemy) {
 
 	(void)enemy;
 
-	velocity_ = MyMath::Add(velocity_, Vector3({0.0f, 0.0f, 0.0f}));
+	// velocity_ = MyMath::Add(velocity_, Vector3({0.0f, 0.0f, 0.0f}));
 
+	isDead_ = true;
 }

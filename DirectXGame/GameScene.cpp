@@ -33,6 +33,8 @@ GameScene::~GameScene() {
 
 void GameScene::Initialize() {
 
+	phase_ = Phase::kPlay;
+
 	// マップチップ
 	mapChipField_ = new MapChipField;
 	mapChipField_->LoadMapChipCsv("Resources/blocks.csv");
@@ -71,8 +73,6 @@ void GameScene::Initialize() {
 	cameraController_->Reset();
 	cameraController_->SetMovableArea({10.0f, 90.0f, 5.0f, 15.0f});
 
-
-
 	// 天球
 	modelSkydome_ = Model::CreateFromOBJ("skydome2", true);
 	skydome_ = std::make_unique<Skydome>();
@@ -85,57 +85,101 @@ void GameScene::Initialize() {
 
 void GameScene::Update() {
 
+	switch (phase_) {
+
+	case Phase::kPlay:
+
 #ifdef _DEBUG
 
-	if (Input::GetInstance()->TriggerKey(DIK_C)) {
+		if (Input::GetInstance()->TriggerKey(DIK_C)) {
 
-		isDebugCameraActive_ = !isDebugCameraActive_;
-	}
-#endif
-
-	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
-		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
-
-			if (!worldTransformBlock)
-				continue;
-
-			Matrix4x4 affin;
-
-			affin = MyMath::MakeAffinMatrix(worldTransformBlock->scale_, worldTransformBlock->rotation_, worldTransformBlock->translation_);
-
-			worldTransformBlock->matWorld_ = affin;
-
-			worldTransformBlock->TransferMatrix();
+			isDebugCameraActive_ = !isDebugCameraActive_;
 		}
+#endif
+		skydome_->Update();
+		player_->Update();
+		for (Enemy* enemy : enemies_) {
+			enemy->Update();
+		}
+
+		cameraController_->Update();
+
+		if (isDebugCameraActive_) {
+
+			debugCamera_->Update();
+			camera_->matView = debugCamera_->GetCamera().matView;
+			camera_->matProjection = debugCamera_->GetCamera().matProjection;
+
+			camera_->TransferMatrix();
+		} else {
+			camera_ = cameraController_->GetCamera();
+			camera_->UpdateMatrix();
+		}
+
+		for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
+			for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
+
+				if (!worldTransformBlock)
+					continue;
+
+				Matrix4x4 affin;
+
+				affin = MyMath::MakeAffinMatrix(worldTransformBlock->scale_, worldTransformBlock->rotation_, worldTransformBlock->translation_);
+
+				worldTransformBlock->matWorld_ = affin;
+
+				worldTransformBlock->TransferMatrix();
+			}
+		}
+
+		CheckAllCollisions();
+
+		break;
+
+	case Phase::kDeath:
+
+		skydome_->Update();
+
+		for (Enemy* enemy : enemies_) {
+			enemy->Update();
+		}
+
+		if (deathParticles_) {
+
+			deathParticles_->Update();
+		}
+
+		if (isDebugCameraActive_) {
+
+			debugCamera_->Update();
+			camera_->matView = debugCamera_->GetCamera().matView;
+			camera_->matProjection = debugCamera_->GetCamera().matProjection;
+
+			camera_->TransferMatrix();
+		} else {
+			camera_ = cameraController_->GetCamera();
+			camera_->UpdateMatrix();
+		}
+		for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
+			for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
+
+				if (!worldTransformBlock)
+					continue;
+
+				Matrix4x4 affin;
+
+				affin = MyMath::MakeAffinMatrix(worldTransformBlock->scale_, worldTransformBlock->rotation_, worldTransformBlock->translation_);
+
+				worldTransformBlock->matWorld_ = affin;
+
+				worldTransformBlock->TransferMatrix();
+			}
+		}
+
+		break;
 	}
 
-	cameraController_->Update();
-	player_->Update();
-
-	for (Enemy* enemy : enemies_) {
-		enemy->Update();
-	}
-
-	if (deathParticles_) {
-
-		deathParticles_->Update();
-	}
-
-	skydome_->Update();
-
-	if (isDebugCameraActive_) {
-
-		debugCamera_->Update();
-		camera_->matView = debugCamera_->GetCamera().matView;
-		camera_->matProjection = debugCamera_->GetCamera().matProjection;
-
-		camera_->TransferMatrix();
-	} else {
-		camera_ = cameraController_->GetCamera();
-		camera_->UpdateMatrix();
-	}
-
-	CheckAllCollisions();
+	ChangePhase();
 }
 
 void GameScene::Draw() {
@@ -161,9 +205,6 @@ void GameScene::Draw() {
 	if (deathParticles_) {
 		deathParticles_->Draw();
 	}
-
-
-
 }
 
 void GameScene::GenerateBlocks() {
@@ -211,7 +252,7 @@ void GameScene::CheckAllCollisions() {
 
 			aabb2 = enemy->GetAABB();
 
-			if (AABBCheckCollision(aabb1,aabb2)) {
+			if (AABBCheckCollision(aabb1, aabb2)) {
 				player_->OnCollision(enemy);
 
 				enemy->OnCollision(player_);
@@ -223,10 +264,32 @@ void GameScene::CheckAllCollisions() {
 
 bool GameScene::AABBCheckCollision(AABB& aabb1, AABB& aabb2) {
 
-	if ((aabb1.min.x <= aabb2.max.x && aabb1.max.x >= aabb2.min.x) && 
-		(aabb1.min.y <= aabb2.max.y && aabb1.max.y >= aabb2.min.y) && 
-		(aabb1.min.z <= aabb2.max.z && aabb1.max.z >= aabb2.min.z)) {
+	if ((aabb1.min.x <= aabb2.max.x && aabb1.max.x >= aabb2.min.x) && (aabb1.min.y <= aabb2.max.y && aabb1.max.y >= aabb2.min.y) && (aabb1.min.z <= aabb2.max.z && aabb1.max.z >= aabb2.min.z)) {
 		return true;
 	}
 	return false;
+}
+
+void GameScene::ChangePhase() {
+
+	switch (phase_) {
+
+	case Phase::kPlay:
+
+		if (player_->IsDead()) {
+		
+			phase_ = Phase::kDeath;
+
+			const Vector3& deathParticlePosition = player_->GetWorldPosition();
+
+			deathParticles_->Initialize(modelDeathParticles_, camera_, deathParticlePosition);
+
+		}
+
+		break;
+
+	case Phase::kDeath:
+
+		break;
+	}
 }
