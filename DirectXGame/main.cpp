@@ -1,25 +1,47 @@
 #include "GameScene.h"
-#include"TitleScene.h"
 #include "KamataEngine.h"
+#include "TitleScene.h"
 #include <Windows.h>
 
 using namespace KamataEngine;
 
+enum class Scene {
+
+	kUnknown = 0,
+	kTitle,
+	kGame,
+
+};
+
+Scene scene = Scene::kUnknown;
+
+GameScene* gameScene = nullptr;
+TitleScene* titleScene = nullptr;
+
+void ChangeScene();
+
+void UpdateScene();
+
+void DrawScene();
+
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
-	//初期化
+	// 初期化
 	KamataEngine::Initialize(L"LC1A_14_タナカ_ミヅキ_AL3");
 	DirectXCommon* dxCommon = DirectXCommon::GetInstance();
+	scene = Scene::kTitle;
+#ifdef _DEBUG
 
-	TitleScene* titleScene = nullptr;
+	scene = Scene::kGame;
+
+#endif
 	titleScene = new TitleScene();
 	titleScene->Initialize();
-	//ゲームシーン初期化
-	GameScene* gameScene = new GameScene();
 
+	gameScene = new GameScene();
 
-	//ループ
+	// ループ
 	while (true) {
 
 		if (KamataEngine::Update()) {
@@ -27,23 +49,29 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		};
 
 		// ゲームシーンアップデート
-		//gameScene->Update();
+		// gameScene->Update();
 
-		titleScene->Update();
+		// titleScene->Update();
 
-		//描画開始地点
+		ChangeScene();
+
+		UpdateScene();
+
+		// 描画開始地点
 		dxCommon->PreDraw();
 
 		// ゲームシーン描画
-		//gameScene->Draw();
+		// gameScene->Draw();
 
-		titleScene->Draw();
+		// titleScene->Draw();
 
-		//描画終了地点
+		DrawScene();
+
+		// 描画終了地点
 		dxCommon->PostDraw();
 	}
 
-	//終了
+	// 終了
 	KamataEngine::Finalize();
 
 	delete gameScene;
@@ -51,4 +79,73 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	gameScene = nullptr;
 
 	return 0;
+}
+
+void ChangeScene() {
+
+	switch (scene) {
+
+	case Scene::kTitle:
+
+		if (titleScene->IsFinished()) {
+
+			scene = Scene::kGame;
+
+			delete titleScene;
+			titleScene = nullptr;
+
+			gameScene = new GameScene;
+		}
+		break;
+	case Scene::kGame:
+
+		if (gameScene->IsFinished()) {
+
+			scene = Scene::kTitle;
+
+			delete gameScene;
+			gameScene = nullptr;
+
+			titleScene = new TitleScene;
+			titleScene->Initialize();
+		}
+
+		break;
+	}
+}
+
+void UpdateScene() {
+
+	switch (scene) {
+
+	case Scene::kTitle:
+
+		titleScene->Update();
+
+		break;
+
+	case Scene::kGame:
+
+		gameScene->Update();
+
+		break;
+	}
+}
+
+void DrawScene() {
+
+	switch (scene) {
+
+	case Scene::kTitle:
+
+		titleScene->Draw();
+
+		break;
+
+	case Scene::kGame:
+
+		gameScene->Draw();
+
+		break;
+	}
 }

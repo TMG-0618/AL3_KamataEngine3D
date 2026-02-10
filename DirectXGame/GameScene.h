@@ -42,6 +42,8 @@ private:
 
 	Phase phase_;
 
+	bool finished_ = false;
+
 public:
 
 	GameScene();
@@ -58,4 +60,6 @@ public:
 	bool AABBCheckCollision(AABB& aabb1,AABB& aabb2);
 
 	void ChangePhase();
+
+	bool IsFinished() const { return finished_; }
 };

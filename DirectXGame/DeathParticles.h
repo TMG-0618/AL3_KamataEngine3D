@@ -17,7 +17,7 @@ private:
 
 	static inline const float kDuration = 2.0f;
 	static inline const float kSpeed = 0.06f;
-	static inline const float kAngleUint = std::numbers::pi_v<float> / (float)kNumParticles;
+	static inline const float kAngleUint = std::numbers::pi_v<float> * 2.0f / (float)kNumParticles;
 
 	bool isFinished_ = false;
 	float counter_ = 0.0f;
@@ -33,5 +33,5 @@ public:
 	void Update();
 	void Draw();
 
-
+	bool IsFinished() { return isFinished_; }
 };

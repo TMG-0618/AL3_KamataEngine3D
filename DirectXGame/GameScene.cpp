@@ -160,6 +160,7 @@ void GameScene::Update() {
 			camera_ = cameraController_->GetCamera();
 			camera_->UpdateMatrix();
 		}
+
 		for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
 			for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
 
@@ -174,6 +175,10 @@ void GameScene::Update() {
 
 				worldTransformBlock->TransferMatrix();
 			}
+		}
+
+		if (deathParticles_ && deathParticles_->IsFinished()) {
+			finished_ = true;
 		}
 
 		break;
