@@ -33,7 +33,7 @@ GameScene::~GameScene() {
 
 void GameScene::Initialize() {
 
-	phase_ = Phase::kPlay;
+	phase_ = Phase::kFadeIn;
 
 	// マップチップ
 	mapChipField_ = new MapChipField;
@@ -81,11 +81,25 @@ void GameScene::Initialize() {
 	// デバッグカメラ
 	debugCamera_ = new DebugCamera(1280, 720);
 	debugCamera_->SetFarZ(2000.0f);
+
+	fade_ = new Fade();
+	fade_->Initialize();
+	fade_->Start(Fade::Status::FadeIn, 1.0f);
 }
 
 void GameScene::Update() {
 
+	skydome_->Update();
 	switch (phase_) {
+
+	case Phase::kFadeIn:
+
+		fade_->Update();
+
+		if (fade_->IsFinished()) {
+			phase_ = Phase::kPlay;
+			fade_->Stop();
+		}
 
 	case Phase::kPlay:
 
@@ -96,11 +110,9 @@ void GameScene::Update() {
 			isDebugCameraActive_ = !isDebugCameraActive_;
 		}
 #endif
-		skydome_->Update();
+		
 		player_->Update();
-		for (Enemy* enemy : enemies_) {
-			enemy->Update();
-		}
+
 
 		cameraController_->Update();
 
@@ -138,12 +150,6 @@ void GameScene::Update() {
 
 	case Phase::kDeath:
 
-		skydome_->Update();
-
-		for (Enemy* enemy : enemies_) {
-			enemy->Update();
-		}
-
 		if (deathParticles_) {
 
 			deathParticles_->Update();
@@ -178,10 +184,27 @@ void GameScene::Update() {
 		}
 
 		if (deathParticles_ && deathParticles_->IsFinished()) {
-			finished_ = true;
+			phase_ = Phase::kFadeOut;
+			fade_->Start(Fade::Status::FadeOut, 1.0f);
 		}
 
 		break;
+
+	case Phase::kFadeOut:
+
+		fade_->Update();
+
+		if (fade_->IsFinished()) {
+
+			finished_ = true;
+
+		}
+
+		break;
+	}
+
+	for (Enemy* enemy : enemies_) {
+		enemy->Update();
 	}
 
 	ChangePhase();
@@ -210,6 +233,8 @@ void GameScene::Draw() {
 	if (deathParticles_) {
 		deathParticles_->Draw();
 	}
+
+	fade_->Draw();
 }
 
 void GameScene::GenerateBlocks() {
@@ -282,13 +307,12 @@ void GameScene::ChangePhase() {
 	case Phase::kPlay:
 
 		if (player_->IsDead()) {
-		
+
 			phase_ = Phase::kDeath;
 
 			const Vector3& deathParticlePosition = player_->GetWorldPosition();
 
 			deathParticles_->Initialize(modelDeathParticles_, camera_, deathParticlePosition);
-
 		}
 
 		break;

@@ -9,10 +9,13 @@
 #include"DeathParticles.h"
 #include <memory>
 #include <vector>
+#include "Fade.h"
 
 enum class Phase {
+	kFadeIn,
 	kPlay,
 	kDeath,
+	kFadeOut,
 };
 
 class GameScene {
@@ -41,6 +44,8 @@ private:
 	KamataEngine::Model* modelDeathParticles_ = nullptr;
 
 	Phase phase_;
+
+	Fade* fade_ = nullptr;
 
 	bool finished_ = false;
 
