@@ -1,5 +1,6 @@
 #pragma once
 #include"KamataEngine.h"
+#include"Fade.h"
 
 class TitleScene {
 
@@ -12,6 +13,8 @@ private:
 	float theta_ = 0.0f;
 
 	bool finished_ = false;
+
+	Fade* fade_ = nullptr;
 
 public:
 

@@ -11,6 +11,8 @@ TitleScene::TitleScene() {
 
 TitleScene::~TitleScene() {
 
+	delete fade_;
+
 }
 
 void TitleScene::Initialize() {
@@ -23,6 +25,9 @@ void TitleScene::Initialize() {
 
 	worldTransform_.Initialize();
 	worldTransform_.rotation_.x = -std::numbers::pi_v<float> / 2.0f;
+
+	fade_ = new Fade();
+	fade_->Initialize();
 }
 
 void TitleScene::Update() {
@@ -38,6 +43,8 @@ void TitleScene::Update() {
 		theta_ -= std::numbers::pi_v<float> * 2.0f;
 
 	}
+
+	fade_->Update();
 
 	worldTransform_.translation_.y = std::sin(theta_) * 7.0f;
 
@@ -57,5 +64,7 @@ void TitleScene::Draw() {
 	modelTitle_->Draw(worldTransform_, *camera_);
 
 	modelTitle_->PostDraw();
+
+	fade_->Draw();
 
 }
