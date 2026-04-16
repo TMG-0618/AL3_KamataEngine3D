@@ -1,17 +1,11 @@
 #pragma once
-#include "Fade.h"
-#include "KamataEngine.h"
+#include"KamataEngine.h"
+#include"Fade.h"
 
 class TitleScene {
 
-public:
-	enum class Phase {
-		kFadeIn,
-		kMain,
-		kFadeOut,
-	};
-
 private:
+
 	KamataEngine::Model* modelTitle_ = nullptr;
 	KamataEngine::Camera* camera_;
 	KamataEngine::WorldTransform worldTransform_;
@@ -22,9 +16,8 @@ private:
 
 	Fade* fade_ = nullptr;
 
-	Phase phase_ = Phase::kFadeIn;
-
 public:
+
 	TitleScene();
 	~TitleScene();
 
@@ -33,4 +26,5 @@ public:
 	void Draw();
 
 	bool IsFinished() const { return finished_; }
+
 };

@@ -1,13 +1,19 @@
 #include "TitleScene.h"
-#include "MyMath.h"
-#include <cmath>
-#include <numbers>
+#include"MyMath.h"
+#include<numbers>
+#include<cmath>
 
 using namespace KamataEngine;
 
-TitleScene::TitleScene() {}
+TitleScene::TitleScene() {
 
-TitleScene::~TitleScene() { delete fade_; }
+}
+
+TitleScene::~TitleScene() {
+
+	delete fade_;
+
+}
 
 void TitleScene::Initialize() {
 
@@ -22,48 +28,23 @@ void TitleScene::Initialize() {
 
 	fade_ = new Fade();
 	fade_->Initialize();
-	fade_->Start(Fade::Status::FadeIn, 1.0f);
 }
 
 void TitleScene::Update() {
 
-	switch (phase_) {
-
-	case Phase::kFadeIn:
-		fade_->Update();
-
-		if (fade_->IsFinished()) {
-			phase_ = Phase::kMain;
-			fade_->Stop();
-		}
-
-		break;
-
-	case Phase::kMain:
-
-		if (Input::GetInstance()->PushKey(DIK_SPACE)) {
-
-			phase_ = Phase::kFadeOut;
-			fade_->Start(Fade::Status::FadeOut, 1.0f);
-		}
-		break;
-
-	case Phase::kFadeOut:
-		fade_->Update();
-
-		if (fade_->IsFinished()) {
-			fade_->Stop();
-			finished_ = true;
-		}
-		break;
+	if (Input::GetInstance()->PushKey(DIK_SPACE)) {
+		finished_ = true;
 	}
 
 	theta_ += 0.1f;
 
 	if (theta_ > std::numbers::pi_v<float> * 2.0f) {
-
+	
 		theta_ -= std::numbers::pi_v<float> * 2.0f;
+
 	}
+
+	fade_->Update();
 
 	worldTransform_.translation_.y = std::sin(theta_) * 7.0f;
 
@@ -85,4 +66,5 @@ void TitleScene::Draw() {
 	modelTitle_->PostDraw();
 
 	fade_->Draw();
+
 }
