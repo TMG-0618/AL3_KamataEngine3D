@@ -1,0 +1,55 @@
+#pragma once
+#include "KamataEngine.h"
+
+enum class MapChipType {
+	kBlank,
+	kBlock,
+	kPlayer,
+};
+
+struct MapChipData {
+	std::vector<std::vector<MapChipType>> data;
+};
+
+class MapChipField {
+
+private:
+	static inline const float kBlockWidth = 1.0f;
+	static inline const float kBlockHeight = 1.0f;
+
+	static inline const uint32_t kNumBlockVirtical = 20;
+	static inline const uint32_t kNumBlockHorizontal = 100;
+
+	MapChipData mapChipData_;
+
+public:
+	struct IndexSet {
+		uint32_t xIndex;
+		uint32_t yIndex;
+	};
+
+	struct Rect {
+	
+		float left;
+		float right;
+		float bottom;
+		float top;
+	};
+
+public:
+
+	void ResetMapChipData();
+
+	void LoadMapChipCsv(const std::string& filePath);
+
+	MapChipType GetMapChipTypeByIndex(uint32_t xIndex, uint32_t yIndex);
+
+	KamataEngine::Vector3 GetMapChipPositionByIndex(uint32_t xIndex, uint32_t yIndex);
+
+	// Getter
+	uint32_t GetNumBlockVirtical() { return kNumBlockVirtical; };
+	uint32_t GetNumBlockHorizontal() { return kNumBlockHorizontal; };
+	IndexSet GetmapChipIndexSetByPosition(const KamataEngine::Vector3& position);
+	Rect GetRectByIndex(uint32_t xIndex, uint32_t yIndex);
+
+};

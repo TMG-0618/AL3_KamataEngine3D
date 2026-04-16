@@ -5,7 +5,7 @@
 
 using namespace KamataEngine;
 
-// Vector3
+//Vector3
 void MyMath::InitializeVector3(Vector3 vector) { vector = {0.0f, 0.0f, 0.0f}; }
 
 Vector3 MyMath::Add(const Vector3& v1, const Vector3& v2) {
@@ -76,9 +76,19 @@ Vector3 MyMath::Normalize(const Vector3& v) {
 	return result;
 }
 
-// Matrix4x4
-void MyMath::InitializeMatrix4x4(KamataEngine::Matrix4x4& matrix) {
+Vector3 MyMath::Lerp(const Vector3& startPos, const Vector3& endPos, float t) {
+	Vector3 result;
+	result.x = (1.0f - t) * startPos.x + t * endPos.x;
+	result.y = (1.0f - t) * startPos.y + t * endPos.y;
+	result.z = (1.0f - t) * startPos.z + t * endPos.z;
 
+	return result;
+}
+
+
+//Matrix4x4
+void MyMath::InitializeMatrix4x4(KamataEngine::Matrix4x4& matrix) {
+	
 	for (int row = 0; row < 4; ++row) {
 		for (int col = 0; col < 4; ++col) {
 			matrix.m[row][col] = 0.0f;

@@ -4,7 +4,7 @@
 class MyMath {
 
 public:
-	// Vector3
+	//Vector3
 
 	static void InitializeVector3(KamataEngine::Vector3 vector);
 
@@ -14,9 +14,10 @@ public:
 	static float Dot(const KamataEngine::Vector3& v1, const KamataEngine::Vector3& v2);
 	static float Length(const KamataEngine::Vector3& v);
 	static KamataEngine::Vector3 Normalize(const KamataEngine::Vector3& v);
+	static KamataEngine::Vector3 Lerp(const KamataEngine::Vector3& startPos, const KamataEngine::Vector3& endPos, float t);
 
-	// Matrix4x4
-
+	//Matrix4x4
+	
 	static void InitializeMatrix4x4(KamataEngine::Matrix4x4& matrix);
 	static KamataEngine::Matrix4x4 Add(const KamataEngine::Matrix4x4& m1, const KamataEngine::Matrix4x4& m2);
 	static KamataEngine::Matrix4x4 Subtract(const KamataEngine::Matrix4x4& m1, const KamataEngine::Matrix4x4& m2);
