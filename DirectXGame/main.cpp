@@ -25,7 +25,7 @@ void DrawScene();
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 	// 初期化
-	KamataEngine::Initialize(L"LC1A_14_タナカ_ミヅキ_AL3");
+	KamataEngine::Initialize(L"LC1A_14_タナカ_ミヅキ");
 	DirectXCommon* dxCommon = DirectXCommon::GetInstance();
 	scene = Scene::kTitle;
 #ifdef _DEBUG
