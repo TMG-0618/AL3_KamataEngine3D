@@ -1,24 +1,26 @@
 #pragma once
+#include "AABB.h"
 #include "CameraController.h"
+#include "DeathParticles.h"
+#include "Enemy.h"
+#include "Fade.h"
 #include "KamataEngine.h"
 #include "MapChipField.h"
 #include "Player.h"
 #include "Skydome.h"
-#include"Enemy.h"
-#include"AABB.h"
-#include"DeathParticles.h"
 #include <memory>
 #include <vector>
 
 enum class Phase {
+	kFadeIn,
 	kPlay,
 	kDeath,
+	kFadeOut,
 };
 
 class GameScene {
 
 private:
-
 	KamataEngine::Model* model_ = nullptr;
 	KamataEngine::Camera* camera_;
 	std::vector<std::vector<KamataEngine::WorldTransform*>> worldTransformBlocks_;
@@ -42,10 +44,11 @@ private:
 
 	Phase phase_;
 
+	Fade* fade_ = nullptr;
+
 	bool finished_ = false;
 
 public:
-
 	GameScene();
 	~GameScene();
 
@@ -57,7 +60,7 @@ public:
 	void SpawnPlayer();
 
 	void CheckAllCollisions();
-	bool AABBCheckCollision(AABB& aabb1,AABB& aabb2);
+	bool AABBCheckCollision(AABB& aabb1, AABB& aabb2);
 
 	void ChangePhase();
 
