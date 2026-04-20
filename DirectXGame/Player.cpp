@@ -28,39 +28,38 @@ void Player::Initialize(Model* model, Camera* camera, const Vector3& position) {
 
 void Player::Update() {
 
-	Move();
+	if (behaviorRequest_ != Behavior::kUnknown) {
 
-	CollisionMapInfo collisionMapInfo;
+		behavior_ = behaviorRequest_;
 
-	collisionMapInfo.moveAmount = velocity_;
+		switch (behavior_) {
 
-	CheckHitMap(collisionMapInfo);
+		case Behavior::kRoot:
+		default:
+			BehaviorRootInitialize();
+			break;
 
-	ResolveMovement(collisionMapInfo);
+		case Behavior::kAttack:
+			BehaviorAttackInitialize();
 
-	ResolveCeilingCollision(collisionMapInfo);
+			break;
+		}
 
-	ResolveWallCollision(collisionMapInfo);
-
-	SwitchLandingState(collisionMapInfo);
-
-	// 旋回制御
-	if (turnTimer_ > 0.0f) {
-
-		turnTimer_ -= 1.0f / 60.0f;
-
-		float destinationRotationYTable[] = {std::numbers::pi_v<float> / 2.0f, std::numbers::pi_v<float> * 3.0f / 2.0f};
-
-		float destinationRotationY = destinationRotationYTable[static_cast<uint32_t>(lrDirection_)];
-
-		float t = turnTimer_ / kTimeTurn;
-
-		worldTransform_.rotation_.y = destinationRotationY * (1.0f - t) + turnFirstRotationY_ * t;
+		behaviorRequest_ = Behavior::kUnknown;
 	}
 
-	worldTransform_.matWorld_ = MyMath::MakeAffinMatrix(worldTransform_.scale_, worldTransform_.rotation_, worldTransform_.translation_);
+	switch (behavior_) {
 
-	worldTransform_.TransferMatrix();
+	case Behavior::kRoot:
+	default:
+		BehaviorRootUpdate();
+		break;
+
+	case Behavior::kAttack:
+
+		BehaviorAttackUpdate();
+		break;
+	}
 }
 
 void Player::Draw() {
@@ -462,4 +461,71 @@ void Player::OnCollision(const Enemy* enemy) {
 	// velocity_ = MyMath::Add(velocity_, Vector3({0.0f, 0.0f, 0.0f}));
 
 	isDead_ = true;
+}
+
+void Player::BehaviorRootInitialize() {}
+
+void Player::BehaviorAttackInitialize() {
+
+	attackParameter_ = 0;
+
+}
+
+void Player::BehaviorRootUpdate() {
+
+	if (Input::GetInstance()->TriggerKey(DIK_SPACE)) {
+	
+		behaviorRequest_ = Behavior::kAttack;
+
+	}
+
+	Move();
+
+	CollisionMapInfo collisionMapInfo;
+
+	collisionMapInfo.moveAmount = velocity_;
+
+	CheckHitMap(collisionMapInfo);
+
+	ResolveMovement(collisionMapInfo);
+
+	ResolveCeilingCollision(collisionMapInfo);
+
+	ResolveWallCollision(collisionMapInfo);
+
+	SwitchLandingState(collisionMapInfo);
+
+	// 旋回制御
+	if (turnTimer_ > 0.0f) {
+
+		turnTimer_ -= 1.0f / 60.0f;
+
+		float destinationRotationYTable[] = {std::numbers::pi_v<float> / 2.0f, std::numbers::pi_v<float> * 3.0f / 2.0f};
+
+		float destinationRotationY = destinationRotationYTable[static_cast<uint32_t>(lrDirection_)];
+
+		float t = turnTimer_ / kTimeTurn;
+
+		worldTransform_.rotation_.y = destinationRotationY * (1.0f - t) + turnFirstRotationY_ * t;
+	}
+
+	worldTransform_.matWorld_ = MyMath::MakeAffinMatrix(worldTransform_.scale_, worldTransform_.rotation_, worldTransform_.translation_);
+
+	worldTransform_.TransferMatrix();
+}
+
+void Player::BehaviorAttackUpdate() {
+
+	attackParameter_++;
+
+	if (attackParameter_ >= 60) {
+
+		behaviorRequest_ = Behavior::kRoot;
+	}
+
+	worldTransform_.translation_ = MyMath::Add(worldTransform_.translation_, {0.1f, 0.0f, 0.0f});
+
+	worldTransform_.matWorld_ = MyMath::MakeAffinMatrix(worldTransform_.scale_, worldTransform_.rotation_, worldTransform_.translation_);
+
+	worldTransform_.TransferMatrix();
 }
