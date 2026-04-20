@@ -30,6 +30,15 @@ private:
 		kNumCorner,
 	};
 
+	enum class Behavior {
+		kUnknown,
+		kRoot,
+		kAttack,
+
+	};
+
+
+
 	KamataEngine::WorldTransform worldTransform_;
 	KamataEngine::Model* model_ = nullptr;
 	KamataEngine::Camera* camera_ = nullptr;
@@ -65,6 +74,12 @@ private:
 	bool justLanded_ = false;
 
 	bool isDead_ = false;
+
+	Behavior behavior_ = Behavior::kRoot;
+	Behavior behaviorRequest_ = Behavior::kUnknown;
+
+	uint32_t attackParameter_ = 0;
+
 
 public:
 	Player();
@@ -104,4 +119,10 @@ public:
 	void OnCollision(const Enemy* enemy);
 
 	bool IsDead() const { return isDead_; }
+	
+	void BehaviorRootInitialize();
+	void BehaviorAttackInitialize();
+
+	void BehaviorRootUpdate();
+	void BehaviorAttackUpdate();
 };
