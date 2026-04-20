@@ -37,7 +37,11 @@ private:
 
 	};
 
-
+	enum class AttackPhase {
+		kCharge,
+		kTackle,
+		kRemaining,
+	};
 
 	KamataEngine::WorldTransform worldTransform_;
 	KamataEngine::Model* model_ = nullptr;
@@ -80,6 +84,7 @@ private:
 
 	uint32_t attackParameter_ = 0;
 
+	AttackPhase attackPhase_;
 
 public:
 	Player();
