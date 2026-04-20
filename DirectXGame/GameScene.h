@@ -21,6 +21,9 @@ enum class Phase {
 class GameScene {
 
 private:
+
+	KamataEngine::Model* textureModel_ = nullptr;
+
 	KamataEngine::Model* model_ = nullptr;
 	KamataEngine::Camera* camera_;
 	std::vector<std::vector<KamataEngine::WorldTransform*>> worldTransformBlocks_;
@@ -47,6 +50,8 @@ private:
 	Fade* fade_ = nullptr;
 
 	bool finished_ = false;
+
+	uint32_t textureHandle_ = 0;
 
 public:
 	GameScene();

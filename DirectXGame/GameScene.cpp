@@ -6,7 +6,7 @@ using namespace KamataEngine;
 GameScene::GameScene() { Initialize(); }
 
 GameScene::~GameScene() {
-
+	delete textureModel_;
 	delete model_;
 	delete modelSkydome_;
 	delete modelPlayer_;
@@ -33,6 +33,8 @@ GameScene::~GameScene() {
 
 void GameScene::Initialize() {
 
+	textureHandle_ = TextureManager::Load("uvChecker.png");
+
 	phase_ = Phase::kFadeIn;
 
 	// マップチップ
@@ -48,6 +50,8 @@ void GameScene::Initialize() {
 	camera_->Initialize();
 
 	// プレイヤー
+	textureModel_ = Model::Create();
+
 	SpawnPlayer();
 
 	player_->SetMapChipField(mapChipField_);
@@ -88,151 +92,16 @@ void GameScene::Initialize() {
 }
 
 void GameScene::Update() {
-
-	skydome_->Update();
-	switch (phase_) {
-
-	case Phase::kFadeIn:
-
-		fade_->Update();
-
-		if (fade_->IsFinished()) {
-			phase_ = Phase::kPlay;
-			fade_->Stop();
-		}
-
-	case Phase::kPlay:
-
-#ifdef _DEBUG
-
-		if (Input::GetInstance()->TriggerKey(DIK_C)) {
-
-			isDebugCameraActive_ = !isDebugCameraActive_;
-		}
-#endif
-
 		player_->Update();
 
-		cameraController_->Update();
-
-		if (isDebugCameraActive_) {
-
-			debugCamera_->Update();
-			camera_->matView = debugCamera_->GetCamera().matView;
-			camera_->matProjection = debugCamera_->GetCamera().matProjection;
-
-			camera_->TransferMatrix();
-		} else {
-			camera_ = cameraController_->GetCamera();
-			camera_->UpdateMatrix();
-		}
-
-		for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
-			for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
-
-				if (!worldTransformBlock)
-					continue;
-
-				Matrix4x4 affin;
-
-				affin = MyMath::MakeAffinMatrix(worldTransformBlock->scale_, worldTransformBlock->rotation_, worldTransformBlock->translation_);
-
-				worldTransformBlock->matWorld_ = affin;
-
-				worldTransformBlock->TransferMatrix();
-			}
-		}
-
-		CheckAllCollisions();
-
-		break;
-
-	case Phase::kDeath:
-
-		if (deathParticles_) {
-
-			deathParticles_->Update();
-		}
-
-		if (isDebugCameraActive_) {
-
-			debugCamera_->Update();
-			camera_->matView = debugCamera_->GetCamera().matView;
-			camera_->matProjection = debugCamera_->GetCamera().matProjection;
-
-			camera_->TransferMatrix();
-		} else {
-			camera_ = cameraController_->GetCamera();
-			camera_->UpdateMatrix();
-		}
-
-		for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
-			for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
-
-				if (!worldTransformBlock)
-					continue;
-
-				Matrix4x4 affin;
-
-				affin = MyMath::MakeAffinMatrix(worldTransformBlock->scale_, worldTransformBlock->rotation_, worldTransformBlock->translation_);
-
-				worldTransformBlock->matWorld_ = affin;
-
-				worldTransformBlock->TransferMatrix();
-			}
-		}
-
-		if (deathParticles_ && deathParticles_->IsFinished()) {
-			phase_ = Phase::kFadeOut;
-			fade_->Start(Fade::Status::FadeOut, 1.0f);
-		}
-
-		break;
-
-	case Phase::kFadeOut:
-
-		fade_->Update();
-
-		if (fade_->IsFinished()) {
-
-			finished_ = true;
-		}
-
-		break;
-	}
-
-	for (Enemy* enemy : enemies_) {
-		enemy->Update();
-	}
-
-	ChangePhase();
 }
 
 void GameScene::Draw() {
 
-	skydome_->Draw();
-	model_->PreDraw();
-	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
-		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
-			if (!worldTransformBlock)
-				continue;
-
-			model_->Draw(*worldTransformBlock, *camera_);
-		}
-	}
-	model_->PostDraw();
 
 	player_->Draw();
 
-	for (Enemy* enemy : enemies_) {
-		enemy->Draw();
-	}
 
-	if (deathParticles_) {
-		deathParticles_->Draw();
-	}
-
-	fade_->Draw();
 }
 
 void GameScene::GenerateBlocks() {
@@ -265,7 +134,7 @@ void GameScene::SpawnPlayer() {
 	player_ = new Player();
 
 	Vector3 playerPosition = mapChipField_->GetMapChipPositionByIndex(1, 18);
-	player_->Initialize(modelPlayer_, camera_, playerPosition);
+	player_->Initialize(textureModel_, textureHandle_, camera_);
 }
 
 void GameScene::CheckAllCollisions() {

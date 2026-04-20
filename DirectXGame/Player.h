@@ -86,6 +86,7 @@ public:
 	~Player();
 
 	void Initialize(KamataEngine::Model* model, KamataEngine::Camera* camera,const KamataEngine::Vector3& position);
+	void Initialize(KamataEngine::Model* model, uint32_t textureHandle, KamataEngine::Camera* camera);
 	void Update();
 	void Draw();
 

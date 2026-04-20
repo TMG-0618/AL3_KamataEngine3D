@@ -26,40 +26,51 @@ void Player::Initialize(Model* model, Camera* camera, const Vector3& position) {
 	worldTransform_.TransferMatrix();
 }
 
+void Player::Initialize(Model* model, uint32_t textureHandle,Camera* camera) { 
+	assert(model);
+	model_ = model;
+	textureHandle_ = textureHandle;
+	camera_ = camera;
+	worldTransform_.Initialize();
+	worldTransform_.matWorld_ = MyMath::MakeAffinMatrix(worldTransform_.scale_, worldTransform_.rotation_, worldTransform_.translation_);
+}
+
 void Player::Update() {
 
-	if (behaviorRequest_ != Behavior::kUnknown) {
+	//if (behaviorRequest_ != Behavior::kUnknown) {
 
-		behavior_ = behaviorRequest_;
+	//	behavior_ = behaviorRequest_;
 
-		switch (behavior_) {
+	//	switch (behavior_) {
 
-		case Behavior::kRoot:
-		default:
-			BehaviorRootInitialize();
-			break;
+	//	case Behavior::kRoot:
+	//	default:
+	//		BehaviorRootInitialize();
+	//		break;
 
-		case Behavior::kAttack:
-			BehaviorAttackInitialize();
+	//	case Behavior::kAttack:
+	//		BehaviorAttackInitialize();
 
-			break;
-		}
+	//		break;
+	//	}
 
-		behaviorRequest_ = Behavior::kUnknown;
-	}
+	//	behaviorRequest_ = Behavior::kUnknown;
+	//}
 
-	switch (behavior_) {
+	//switch (behavior_) {
 
-	case Behavior::kRoot:
-	default:
-		BehaviorRootUpdate();
-		break;
+	//case Behavior::kRoot:
+	//default:
+	//	BehaviorRootUpdate();
+	//	break;
 
-	case Behavior::kAttack:
+	//case Behavior::kAttack:
 
-		BehaviorAttackUpdate();
-		break;
-	}
+	//	BehaviorAttackUpdate();
+	//	break;
+	//}
+
+	worldTransform_.TransferMatrix();
 }
 
 void Player::Draw() {
@@ -69,7 +80,8 @@ void Player::Draw() {
 
 	model_->PreDraw();
 
-	model_->Draw(worldTransform_, *camera_);
+	//model_->Draw(worldTransform_, *camera_);
+	model_->Draw(worldTransform_, *camera_, textureHandle_);
 
 	model_->PostDraw();
 }
