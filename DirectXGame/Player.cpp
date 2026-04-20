@@ -12,11 +12,12 @@ Player::Player() {}
 
 Player::~Player() {}
 
-void Player::Initialize(Model* model, Camera* camera, const Vector3& position) {
+void Player::Initialize(Model* model, Model* modelAttack, Camera* camera, const Vector3& position) {
 
 	assert(model);
 
 	model_ = model;
+	modelAttack_ = modelAttack;
 	camera_ = camera;
 	worldTransform_.Initialize();
 	worldTransform_.translation_ = position;
@@ -24,6 +25,9 @@ void Player::Initialize(Model* model, Camera* camera, const Vector3& position) {
 	worldTransform_.matWorld_ = MyMath::MakeAffinMatrix(worldTransform_.scale_, worldTransform_.rotation_, worldTransform_.translation_);
 
 	worldTransform_.TransferMatrix();
+
+	worldTransformAttack_.Initialize();
+
 }
 
 void Player::Update() {
@@ -72,6 +76,18 @@ void Player::Draw() {
 	model_->Draw(worldTransform_, *camera_);
 
 	model_->PostDraw();
+
+	if (behavior_ == Behavior::kAttack) {
+
+		if (attackPhase_ != AttackPhase::kCharge) {
+
+			modelAttack_->PreDraw();
+
+			modelAttack_->Draw(worldTransformAttack_, *camera_);
+
+			modelAttack_->PostDraw();
+		}
+	}
 }
 
 void Player::Move() {
@@ -414,7 +430,7 @@ void Player::SwitchLandingState(const CollisionMapInfo& info) {
 	} else {
 
 		if (info.isLanding) {
-
+			aerialAttackableAmount = 1;
 			onGround_ = true;
 			DebugText::GetInstance()->ConsolePrintf("landing\n");
 			velocity_.x *= 1.0f - kAttenuationLanding;
@@ -475,7 +491,13 @@ void Player::BehaviorRootUpdate() {
 
 	if (Input::GetInstance()->TriggerKey(DIK_SPACE)) {
 
-		behaviorRequest_ = Behavior::kAttack;
+		if (aerialAttackableAmount > 0) {
+			
+			if (!onGround_) {
+				aerialAttackableAmount--;
+			}
+			behaviorRequest_ = Behavior::kAttack;
+		}
 	}
 
 	Move();
@@ -551,8 +573,6 @@ void Player::BehaviorAttackUpdate() {
 		worldTransform_.scale_.z = MyMath::EaseOut(1.3f, 1.0f, t);
 		worldTransform_.scale_.y = MyMath::EaseOut(0.7f, 1.0f, t);
 
-		
-
 		if (attackParameter_ >= 10) {
 
 			behaviorRequest_ = Behavior::kRoot;
@@ -591,7 +611,11 @@ void Player::BehaviorAttackUpdate() {
 
 	SwitchLandingState(collisionMapInfo);
 
-	worldTransform_.matWorld_ = MyMath::MakeAffinMatrix(worldTransform_.scale_, worldTransform_.rotation_, worldTransform_.translation_);
+	worldTransformAttack_.translation_ = worldTransform_.translation_;
+	worldTransformAttack_.rotation_ = worldTransform_.rotation_;
 
+	worldTransform_.matWorld_ = MyMath::MakeAffinMatrix(worldTransform_.scale_, worldTransform_.rotation_, worldTransform_.translation_);
+	worldTransformAttack_.matWorld_ = MyMath::MakeAffinMatrix(worldTransformAttack_.scale_, worldTransformAttack_.rotation_, worldTransformAttack_.translation_);
 	worldTransform_.TransferMatrix();
+	worldTransformAttack_.TransferMatrix();
 }

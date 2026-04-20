@@ -262,10 +262,11 @@ void GameScene::GenerateBlocks() {
 void GameScene::SpawnPlayer() {
 
 	modelPlayer_ = Model::CreateFromOBJ("player", true);
+	modelAttack_ = Model::CreateFromOBJ("hit_effect", true);
 	player_ = new Player();
 
 	Vector3 playerPosition = mapChipField_->GetMapChipPositionByIndex(1, 18);
-	player_->Initialize(modelPlayer_, camera_, playerPosition);
+	player_->Initialize(modelPlayer_, modelAttack_,camera_, playerPosition);
 }
 
 void GameScene::CheckAllCollisions() {

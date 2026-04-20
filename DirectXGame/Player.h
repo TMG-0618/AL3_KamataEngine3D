@@ -85,12 +85,16 @@ private:
 	uint32_t attackParameter_ = 0;
 
 	AttackPhase attackPhase_;
-	
+
+	KamataEngine::Model* modelAttack_ = nullptr;
+	KamataEngine::WorldTransform worldTransformAttack_;
+	uint32_t aerialAttackableAmount = 1;
+
 public:
 	Player();
 	~Player();
 
-	void Initialize(KamataEngine::Model* model, KamataEngine::Camera* camera,const KamataEngine::Vector3& position);
+	void Initialize(KamataEngine::Model* model, KamataEngine::Model* modelAttack, KamataEngine::Camera* camera, const KamataEngine::Vector3& position);
 	void Update();
 	void Draw();
 
