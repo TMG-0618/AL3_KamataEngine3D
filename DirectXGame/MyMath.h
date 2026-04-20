@@ -35,4 +35,9 @@ public:
 	static KamataEngine::Matrix4x4 MakeRotateZMatrix(float radian);
 
 	static KamataEngine::Matrix4x4 MakeAffinMatrix(const KamataEngine::Vector3& scale, const KamataEngine::Vector3& rotate, const KamataEngine::Vector3& translate);
+
+	//Easing
+
+	static float EaseOut(float start, float end, float t);
+	static float EaseIn(float start, float end, float t);
 };

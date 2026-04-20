@@ -85,7 +85,7 @@ private:
 	uint32_t attackParameter_ = 0;
 
 	AttackPhase attackPhase_;
-
+	
 public:
 	Player();
 	~Player();

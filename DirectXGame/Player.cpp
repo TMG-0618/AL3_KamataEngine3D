@@ -466,17 +466,16 @@ void Player::OnCollision(const Enemy* enemy) {
 void Player::BehaviorRootInitialize() {}
 
 void Player::BehaviorAttackInitialize() {
-
+	attackPhase_ = AttackPhase::kCharge;
 	attackParameter_ = 0;
-
+	velocity_ = {0.0f, 0.0f, 0.0f};
 }
 
 void Player::BehaviorRootUpdate() {
 
 	if (Input::GetInstance()->TriggerKey(DIK_SPACE)) {
-	
-		behaviorRequest_ = Behavior::kAttack;
 
+		behaviorRequest_ = Behavior::kAttack;
 	}
 
 	Move();
@@ -518,12 +517,79 @@ void Player::BehaviorAttackUpdate() {
 
 	attackParameter_++;
 
-	if (attackParameter_ >= 60) {
+	switch (attackPhase_) {
 
-		behaviorRequest_ = Behavior::kRoot;
+	case AttackPhase::kCharge:
+	default: {
+
+		float t = static_cast<float>(attackParameter_) / 15.0f;
+		worldTransform_.scale_.z = MyMath::EaseOut(1.0f, 0.3f, t);
+		worldTransform_.scale_.y = MyMath::EaseOut(1.0f, 1.6f, t);
+
+		if (attackParameter_ >= 15) {
+			attackPhase_ = AttackPhase::kTackle;
+			attackParameter_ = 0;
+		}
+		break;
+	}
+	case AttackPhase::kTackle: {
+
+		float t = static_cast<float>(attackParameter_) / 10.0f;
+		worldTransform_.scale_.z = MyMath::EaseOut(0.3f, 1.3f, t);
+		worldTransform_.scale_.z = MyMath::EaseIn(1.6f, 0.7f, t);
+
+		if (attackParameter_ >= 10) {
+			attackPhase_ = AttackPhase::kRemaining;
+			attackParameter_ = 0;
+		}
+
+		break;
+	}
+	case AttackPhase::kRemaining: {
+
+		float t = static_cast<float>(attackParameter_) / 10.0f;
+		worldTransform_.scale_.z = MyMath::EaseOut(1.3f, 1.0f, t);
+		worldTransform_.scale_.y = MyMath::EaseOut(0.7f, 1.0f, t);
+
+		
+
+		if (attackParameter_ >= 10) {
+
+			behaviorRequest_ = Behavior::kRoot;
+		}
+
+		break;
+	}
+	}
+	Vector3 velocity{};
+
+	switch (attackPhase_) {
+
+	case AttackPhase::kTackle:
+
+		if (lrDirection_ == LRDirection::kRight) {
+
+			velocity.x = 0.5f;
+
+		} else {
+			velocity.x = -0.5f;
+		}
+		break;
 	}
 
-	worldTransform_.translation_ = MyMath::Add(worldTransform_.translation_, {0.1f, 0.0f, 0.0f});
+	CollisionMapInfo collisionMapInfo;
+
+	collisionMapInfo.moveAmount = velocity;
+
+	CheckHitMap(collisionMapInfo);
+
+	ResolveMovement(collisionMapInfo);
+
+	ResolveCeilingCollision(collisionMapInfo);
+
+	ResolveWallCollision(collisionMapInfo);
+
+	SwitchLandingState(collisionMapInfo);
 
 	worldTransform_.matWorld_ = MyMath::MakeAffinMatrix(worldTransform_.scale_, worldTransform_.rotation_, worldTransform_.translation_);
 
