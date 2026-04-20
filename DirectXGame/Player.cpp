@@ -12,11 +12,12 @@ Player::Player() {}
 
 Player::~Player() {}
 
-void Player::Initialize(Model* model, Camera* camera, const Vector3& position) {
+void Player::Initialize(Model* model, Model* modelAttack, Camera* camera, const Vector3& position) {
 
 	assert(model);
 
 	model_ = model;
+	modelAttack_ = modelAttack;
 	camera_ = camera;
 	worldTransform_.Initialize();
 	worldTransform_.translation_ = position;
@@ -24,6 +25,9 @@ void Player::Initialize(Model* model, Camera* camera, const Vector3& position) {
 	worldTransform_.matWorld_ = MyMath::MakeAffinMatrix(worldTransform_.scale_, worldTransform_.rotation_, worldTransform_.translation_);
 
 	worldTransform_.TransferMatrix();
+
+	worldTransformAttack_.Initialize();
+
 }
 
 void Player::Update() {
@@ -72,6 +76,18 @@ void Player::Draw() {
 	model_->Draw(worldTransform_, *camera_);
 
 	model_->PostDraw();
+
+	if (behavior_ == Behavior::kAttack) {
+
+		if (attackPhase_ != AttackPhase::kCharge) {
+
+			modelAttack_->PreDraw();
+
+			modelAttack_->Draw(worldTransformAttack_, *camera_);
+
+			modelAttack_->PostDraw();
+		}
+	}
 }
 
 void Player::Move() {
@@ -414,7 +430,7 @@ void Player::SwitchLandingState(const CollisionMapInfo& info) {
 	} else {
 
 		if (info.isLanding) {
-
+			aerialAttackableAmount = 1;
 			onGround_ = true;
 			DebugText::GetInstance()->ConsolePrintf("landing\n");
 			velocity_.x *= 1.0f - kAttenuationLanding;
@@ -466,17 +482,22 @@ void Player::OnCollision(const Enemy* enemy) {
 void Player::BehaviorRootInitialize() {}
 
 void Player::BehaviorAttackInitialize() {
-
+	attackPhase_ = AttackPhase::kCharge;
 	attackParameter_ = 0;
-
+	velocity_ = {0.0f, 0.0f, 0.0f};
 }
 
 void Player::BehaviorRootUpdate() {
 
 	if (Input::GetInstance()->TriggerKey(DIK_SPACE)) {
-	
-		behaviorRequest_ = Behavior::kAttack;
 
+		if (aerialAttackableAmount > 0) {
+			
+			if (!onGround_) {
+				aerialAttackableAmount--;
+			}
+			behaviorRequest_ = Behavior::kAttack;
+		}
 	}
 
 	Move();
@@ -518,14 +539,83 @@ void Player::BehaviorAttackUpdate() {
 
 	attackParameter_++;
 
-	if (attackParameter_ >= 60) {
+	switch (attackPhase_) {
 
-		behaviorRequest_ = Behavior::kRoot;
+	case AttackPhase::kCharge:
+	default: {
+
+		float t = static_cast<float>(attackParameter_) / 15.0f;
+		worldTransform_.scale_.z = MyMath::EaseOut(1.0f, 0.3f, t);
+		worldTransform_.scale_.y = MyMath::EaseOut(1.0f, 1.6f, t);
+
+		if (attackParameter_ >= 15) {
+			attackPhase_ = AttackPhase::kTackle;
+			attackParameter_ = 0;
+		}
+		break;
+	}
+	case AttackPhase::kTackle: {
+
+		float t = static_cast<float>(attackParameter_) / 10.0f;
+		worldTransform_.scale_.z = MyMath::EaseOut(0.3f, 1.3f, t);
+		worldTransform_.scale_.z = MyMath::EaseIn(1.6f, 0.7f, t);
+
+		if (attackParameter_ >= 10) {
+			attackPhase_ = AttackPhase::kRemaining;
+			attackParameter_ = 0;
+		}
+
+		break;
+	}
+	case AttackPhase::kRemaining: {
+
+		float t = static_cast<float>(attackParameter_) / 10.0f;
+		worldTransform_.scale_.z = MyMath::EaseOut(1.3f, 1.0f, t);
+		worldTransform_.scale_.y = MyMath::EaseOut(0.7f, 1.0f, t);
+
+		if (attackParameter_ >= 10) {
+
+			behaviorRequest_ = Behavior::kRoot;
+		}
+
+		break;
+	}
+	}
+	Vector3 velocity{};
+
+	switch (attackPhase_) {
+
+	case AttackPhase::kTackle:
+
+		if (lrDirection_ == LRDirection::kRight) {
+
+			velocity.x = 0.5f;
+
+		} else {
+			velocity.x = -0.5f;
+		}
+		break;
 	}
 
-	worldTransform_.translation_ = MyMath::Add(worldTransform_.translation_, {0.1f, 0.0f, 0.0f});
+	CollisionMapInfo collisionMapInfo;
+
+	collisionMapInfo.moveAmount = velocity;
+
+	CheckHitMap(collisionMapInfo);
+
+	ResolveMovement(collisionMapInfo);
+
+	ResolveCeilingCollision(collisionMapInfo);
+
+	ResolveWallCollision(collisionMapInfo);
+
+	SwitchLandingState(collisionMapInfo);
+
+	worldTransformAttack_.translation_ = worldTransform_.translation_;
+	worldTransformAttack_.rotation_ = worldTransform_.rotation_;
 
 	worldTransform_.matWorld_ = MyMath::MakeAffinMatrix(worldTransform_.scale_, worldTransform_.rotation_, worldTransform_.translation_);
-
+	worldTransformAttack_.matWorld_ = MyMath::MakeAffinMatrix(worldTransformAttack_.scale_, worldTransformAttack_.rotation_, worldTransformAttack_.translation_);
 	worldTransform_.TransferMatrix();
+	worldTransformAttack_.TransferMatrix();
 }

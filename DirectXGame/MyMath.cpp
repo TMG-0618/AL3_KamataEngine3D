@@ -1,6 +1,5 @@
 #include "MyMath.h"
-#include "MyMath.h"
-#include <assert.h>
+#include<algorithm>
 #include <cmath>
 
 using namespace KamataEngine;
@@ -317,4 +316,24 @@ Matrix4x4 MyMath::MakeAffinMatrix(const Vector3& scale, const Vector3& rotate, c
 	result = Multiply(result, MakeTranslateMatrix(translate));
 
 	return result;
+}
+
+//Easing
+
+float MyMath::EaseOut(float start, float end, float t) {
+
+	t = std::clamp(t, 0.0f, 1.0f);
+
+	float eased = 1.0f - (1.0f - t) * (1.0f - t);
+
+	return start * (1 - eased) + end * eased;
+}
+
+float MyMath::EaseIn(float start, float end, float t) {
+
+	t = std::clamp(t, 0.0f, 1.0f);
+
+	float eased = t * t;
+
+	return start * (1 - eased) + end * eased;
 }
