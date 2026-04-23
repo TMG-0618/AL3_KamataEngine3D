@@ -205,7 +205,16 @@ void GameScene::Update() {
 		enemy->Update();
 	}
 
-	ChangePhase();
+	enemies_.remove_if([](Enemy* enemy) {
+		if (enemy->IsDead()) {
+
+			delete enemy;
+			return false;
+		}
+		return false;
+	});
+
+	    ChangePhase();
 }
 
 void GameScene::Draw() {
@@ -266,7 +275,7 @@ void GameScene::SpawnPlayer() {
 	player_ = new Player();
 
 	Vector3 playerPosition = mapChipField_->GetMapChipPositionByIndex(1, 18);
-	player_->Initialize(modelPlayer_, modelAttack_,camera_, playerPosition);
+	player_->Initialize(modelPlayer_, modelAttack_, camera_, playerPosition);
 }
 
 void GameScene::CheckAllCollisions() {

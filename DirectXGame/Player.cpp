@@ -474,6 +474,11 @@ void Player::OnCollision(const Enemy* enemy) {
 
 	(void)enemy;
 
+	if (IsAttack()) {
+
+		return;
+	}
+
 	// velocity_ = MyMath::Add(velocity_, Vector3({0.0f, 0.0f, 0.0f}));
 
 	isDead_ = true;
@@ -618,4 +623,12 @@ void Player::BehaviorAttackUpdate() {
 	worldTransformAttack_.matWorld_ = MyMath::MakeAffinMatrix(worldTransformAttack_.scale_, worldTransformAttack_.rotation_, worldTransformAttack_.translation_);
 	worldTransform_.TransferMatrix();
 	worldTransformAttack_.TransferMatrix();
+}
+
+bool Player::IsAttack() {
+
+	if (behavior_ == Behavior::kAttack) {
+		return true;
+	}
+	return false;
 }

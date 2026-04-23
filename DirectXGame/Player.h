@@ -134,4 +134,6 @@ public:
 
 	void BehaviorRootUpdate();
 	void BehaviorAttackUpdate();
+
+	bool IsAttack();
 };

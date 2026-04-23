@@ -24,6 +24,8 @@ private:
 	static inline const float kWidth = 0.8f;
 	static inline const float kHeight = 0.8f;
 
+	bool isDead_ = false;
+
 public:
 	Enemy();
 	~Enemy();
@@ -36,4 +38,6 @@ public:
 	AABB GetAABB();
 
 	void OnCollision(const Player* player);
+
+	bool IsDead() { return isDead_; }
 };

@@ -37,6 +37,9 @@ void Enemy::Update() {
 }
 
 void Enemy::Draw() {
+
+	if (isDead_)return;
+
 	model_->PreDraw();
 
 	model_->Draw(worldTransform_, *camera_);
@@ -66,4 +69,7 @@ AABB Enemy::GetAABB() {
 	return aabb;
 }
 
-void Enemy::OnCollision(const Player* player) { (void)player; }
+void Enemy::OnCollision(const Player* player) {
+	(void)player;
+	isDead_ = true;
+}
