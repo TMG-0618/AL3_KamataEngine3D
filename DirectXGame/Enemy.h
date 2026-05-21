@@ -38,6 +38,8 @@ private:
 
 	int deathParameter_ = 0;
 
+	bool isCollisionDisabled_ = false;
+
 public:
 	Enemy();
 	~Enemy();
@@ -52,6 +54,7 @@ public:
 	void OnCollision(const Player* player);
 
 	bool IsDead() { return isDead_; }
+	bool IsCollsionDisabled() { return isCollisionDisabled_; }
 
 	void BehaviorMoveInitialize();
 	void BehaviorDeathInitialize();

@@ -288,6 +288,10 @@ void GameScene::CheckAllCollisions() {
 
 		for (Enemy* enemy : enemies_) {
 
+			if (enemy->IsCollsionDisabled()) {
+				continue;
+			}
+
 			aabb2 = enemy->GetAABB();
 
 			if (AABBCheckCollision(aabb1, aabb2)) {

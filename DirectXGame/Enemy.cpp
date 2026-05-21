@@ -95,6 +95,7 @@ void Enemy::OnCollision(const Player* player) {
 	if (player->IsAttack()) {
 
 		behaviorRequest_ = Behavior::kDeath;
+		isCollisionDisabled_ = true;
 	}
 }
 
