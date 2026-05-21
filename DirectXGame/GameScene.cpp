@@ -17,7 +17,7 @@ GameScene::~GameScene() {
 		}
 	}
 
-	for (int32_t i = 0; i < 3; ++i) {
+	while (!enemies_.empty()) {
 		delete enemies_.front();
 		enemies_.pop_front();
 	}
@@ -201,20 +201,20 @@ void GameScene::Update() {
 		break;
 	}
 
-	for (Enemy* enemy : enemies_) {
-		enemy->Update();
-	}
-
 	enemies_.remove_if([](Enemy* enemy) {
 		if (enemy->IsDead()) {
 
 			delete enemy;
-			return false;
+			return true;
 		}
 		return false;
 	});
 
-	    ChangePhase();
+	for (Enemy* enemy : enemies_) {
+		enemy->Update();
+	}
+
+	ChangePhase();
 }
 
 void GameScene::Draw() {

@@ -625,7 +625,7 @@ void Player::BehaviorAttackUpdate() {
 	worldTransformAttack_.TransferMatrix();
 }
 
-bool Player::IsAttack() {
+bool Player::IsAttack() const {
 
 	if (behavior_ == Behavior::kAttack) {
 		return true;

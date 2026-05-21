@@ -7,6 +7,13 @@ class Player;
 class Enemy {
 
 private:
+
+	enum class Behavior {
+		kUnknown,
+		kMove,
+		kDeath,
+	};
+
 	KamataEngine::WorldTransform worldTransform_;
 	KamataEngine::Model* model_ = nullptr;
 	KamataEngine::Camera* camera_ = nullptr;
@@ -26,6 +33,11 @@ private:
 
 	bool isDead_ = false;
 
+	Behavior behavior_ = Behavior::kMove;
+	Behavior behaviorRequest_ = Behavior::kUnknown;
+
+	int deathParameter_ = 0;
+
 public:
 	Enemy();
 	~Enemy();
@@ -40,4 +52,10 @@ public:
 	void OnCollision(const Player* player);
 
 	bool IsDead() { return isDead_; }
+
+	void BehaviorMoveInitialize();
+	void BehaviorDeathInitialize();
+
+	void BehaviorMoveUpdate();
+	void BehaviorDeathUpdate();
 };

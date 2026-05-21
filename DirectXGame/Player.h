@@ -135,5 +135,5 @@ public:
 	void BehaviorRootUpdate();
 	void BehaviorAttackUpdate();
 
-	bool IsAttack();
+	bool IsAttack() const;
 };
