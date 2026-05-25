@@ -14,8 +14,8 @@ public:
 private:
 	Player* target_ = nullptr;
 
-	KamataEngine::Vector3 tagetOffset_ = {0.0f, 0.0f, -15.0f};
-	KamataEngine::Vector3 targetpos_ = {};
+	KamataEngine::Vector3 targetOffset_ = {0.0f, 0.0f, -15.0f};
+	KamataEngine::Vector3 targetPos_ = {};
 	KamataEngine::Camera* camera_ = nullptr;
 
 	struct Rect {
@@ -47,5 +47,5 @@ public:
 
 	void SetMode(Mode mode) { mode_ = mode; }
 	Mode GetMode() const { return mode_; }
-	KamataEngine::Vector3 GetTargetOffset() { return tagetOffset_; }
+	KamataEngine::Vector3 GetTargetOffset() { return targetOffset_; }
 };
