@@ -10,6 +10,7 @@ enum class LRDirection {
 class MapChipField;
 
 class Enemy;
+class CameraController;
 
 class Player {
 
@@ -46,6 +47,8 @@ private:
 	KamataEngine::WorldTransform worldTransform_;
 	KamataEngine::Model* model_ = nullptr;
 	KamataEngine::Camera* camera_ = nullptr;
+
+	CameraController* cameraController_ = nullptr;
 
 	uint32_t textureHandle_ = 0u;
 
@@ -125,6 +128,7 @@ public:
 	KamataEngine::Vector3 GetWorldPosition();
 	AABB GetAABB();
 
+
 	void OnCollision(const Enemy* enemy);
 
 	bool IsDead() const { return isDead_; }
@@ -136,4 +140,8 @@ public:
 	void BehaviorAttackUpdate();
 
 	bool IsAttack() const;
+
+	void ClampToScreen();
+
+	void SetCameraController(CameraController* cc) { cameraController_ = cc; }
 };

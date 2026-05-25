@@ -3,6 +3,7 @@
 #include <cmath>
 #include <numbers>
 
+
 using namespace KamataEngine;
 
 TitleScene::TitleScene() {}

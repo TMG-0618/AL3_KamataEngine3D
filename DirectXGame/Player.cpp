@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <assert.h>
 #include <numbers>
+#include"CameraController.h"
 
 using namespace KamataEngine;
 
@@ -27,7 +28,6 @@ void Player::Initialize(Model* model, Model* modelAttack, Camera* camera, const 
 	worldTransform_.TransferMatrix();
 
 	worldTransformAttack_.Initialize();
-
 }
 
 void Player::Update() {
@@ -497,10 +497,11 @@ void Player::BehaviorRootUpdate() {
 	if (Input::GetInstance()->TriggerKey(DIK_SPACE)) {
 
 		if (aerialAttackableAmount > 0) {
-			
+
 			if (!onGround_) {
 				aerialAttackableAmount--;
 			}
+
 			behaviorRequest_ = Behavior::kAttack;
 		}
 	}
@@ -535,6 +536,7 @@ void Player::BehaviorRootUpdate() {
 		worldTransform_.rotation_.y = destinationRotationY * (1.0f - t) + turnFirstRotationY_ * t;
 	}
 
+	ClampToScreen();
 	worldTransform_.matWorld_ = MyMath::MakeAffinMatrix(worldTransform_.scale_, worldTransform_.rotation_, worldTransform_.translation_);
 
 	worldTransform_.TransferMatrix();
@@ -619,6 +621,7 @@ void Player::BehaviorAttackUpdate() {
 	worldTransformAttack_.translation_ = worldTransform_.translation_;
 	worldTransformAttack_.rotation_ = worldTransform_.rotation_;
 
+	ClampToScreen();
 	worldTransform_.matWorld_ = MyMath::MakeAffinMatrix(worldTransform_.scale_, worldTransform_.rotation_, worldTransform_.translation_);
 	worldTransformAttack_.matWorld_ = MyMath::MakeAffinMatrix(worldTransformAttack_.scale_, worldTransformAttack_.rotation_, worldTransformAttack_.translation_);
 	worldTransform_.TransferMatrix();
@@ -631,4 +634,47 @@ bool Player::IsAttack() const {
 		return true;
 	}
 	return false;
+}
+
+void Player::ClampToScreen() {
+
+	// Followモード中は実行しない
+	if (cameraController_->GetMode() != CameraController::Mode::kForcedScroll) {
+		return;
+	}
+
+	// absで確実に正の値にする
+	const float kScreenHalfWidth = std::tan(camera_->fovAngleY / 2.0f) * std::abs(cameraController_->GetTargetOffset().z) * camera_->aspectRatio;
+
+	float cameraLeft = camera_->translation_.x - kScreenHalfWidth;
+	float cameraRight = camera_->translation_.x + kScreenHalfWidth;
+
+	bool pushedByScroll = false;
+
+	if (worldTransform_.translation_.x - kWidth / 2.0f < cameraLeft) {
+		worldTransform_.translation_.x = cameraLeft + kWidth / 2.0f;
+		if (velocity_.x < 0.0f) {
+			velocity_.x = 0.0f;
+		}
+		pushedByScroll = true;
+	}
+
+	if (worldTransform_.translation_.x + kWidth / 2.0f > cameraRight) {
+		worldTransform_.translation_.x = cameraRight - kWidth / 2.0f;
+		if (velocity_.x > 0.0f) {
+			velocity_.x = 0.0f;
+		}
+		pushedByScroll = true;
+	}
+
+	if (pushedByScroll) {
+		for (uint32_t i = 0; i < kNumCorner; ++i) {
+			Vector3 corner = CornerPosition(worldTransform_.translation_, static_cast<Corner>(i));
+			MapChipField::IndexSet indexSet = mapChipField_->GetmapChipIndexSetByPosition(corner);
+			if (mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex) == MapChipType::kBlock) {
+				isDead_ = true;
+				break;
+			}
+		}
+	}
 }

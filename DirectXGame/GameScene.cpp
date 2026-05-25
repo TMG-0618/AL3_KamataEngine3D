@@ -1,6 +1,7 @@
 #include "GameScene.h"
 #include "MyMath.h"
 
+
 using namespace KamataEngine;
 
 GameScene::GameScene() { Initialize(); }
@@ -33,6 +34,9 @@ GameScene::~GameScene() {
 
 void GameScene::Initialize() {
 
+#ifdef _DEBUG
+
+#endif
 	phase_ = Phase::kFadeIn;
 
 	// マップチップ
@@ -71,7 +75,10 @@ void GameScene::Initialize() {
 	cameraController_->Initialize(camera_);
 	cameraController_->SetTarget(player_);
 	cameraController_->Reset();
-	cameraController_->SetMovableArea({10.0f, 90.0f, 5.0f, 15.0f});
+	cameraController_->SetMovableArea({10.0f,89.0f, 5.0f, 15.0f});
+	cameraController_->SetMode(CameraController::Mode::kForcedScroll);
+
+	player_->SetCameraController(cameraController_);
 
 	// 天球
 	modelSkydome_ = Model::CreateFromOBJ("skydome2", true);

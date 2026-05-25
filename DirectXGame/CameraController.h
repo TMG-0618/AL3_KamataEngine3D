@@ -3,7 +3,13 @@
 
 class Player;
 
+
 class CameraController {
+public:
+	enum class Mode {
+	kFollow,
+	kForcedScroll,
+};
 
 private:
 	Player* target_ = nullptr;
@@ -19,13 +25,16 @@ private:
 		float top = 1.0f;
 	};
 
-	Rect movableArea_ = {0.0f, 100.0f, 0.0f, 100.0f};
+	Mode mode_ = Mode::kFollow;
+
+	Rect movableArea_ = {0.0f, 80.0f, 0.0f, 100.0f};
 
 	static inline const float kInterpolationRate = 0.1f;
 	static inline const float kVelocityBias = 15.0f;
 	static inline const Rect margin = {-10.0f, 10.0f, -5.0f, 5.0f};
 
-	public : CameraController();
+public:
+	CameraController();
 	~CameraController();
 	void Initialize(KamataEngine::Camera* camera);
 	void Update();
@@ -35,4 +44,8 @@ private:
 	void SetTarget(Player* target) { target_ = target; }
 	KamataEngine::Camera* GetCamera() { return camera_; }
 	void SetMovableArea(Rect area) { movableArea_ = area; }
+
+	void SetMode(Mode mode) { mode_ = mode; }
+	Mode GetMode() const { return mode_; }
+	KamataEngine::Vector3 GetTargetOffset() { return tagetOffset_; }
 };
