@@ -1,11 +1,11 @@
 #define NOMINMAX
 #include "Player.h"
+#include "CameraController.h"
 #include "MapChipField.h"
 #include "MyMath.h"
 #include <algorithm>
 #include <assert.h>
 #include <numbers>
-#include"CameraController.h"
 
 using namespace KamataEngine;
 
@@ -32,6 +32,11 @@ void Player::Initialize(Model* model, Model* modelAttack, Camera* camera, const 
 
 void Player::Update() {
 
+	if (isRequestKnockback_) {
+		behaviorRequest_ = Behavior::kKnockback;
+		isRequestKnockback_ = false;
+	}
+
 	if (behaviorRequest_ != Behavior::kUnknown) {
 
 		behavior_ = behaviorRequest_;
@@ -45,6 +50,12 @@ void Player::Update() {
 
 		case Behavior::kAttack:
 			BehaviorAttackInitialize();
+
+			break;
+
+		case Behavior::kKnockback:
+
+			BehaviorKnockBackInitialize();
 
 			break;
 		}
@@ -62,6 +73,12 @@ void Player::Update() {
 	case Behavior::kAttack:
 
 		BehaviorAttackUpdate();
+		break;
+
+		case Behavior::kKnockback:
+
+		BehaviorKnockBackUpdate();
+
 		break;
 	}
 }
@@ -281,7 +298,7 @@ void Player::CheckHitRight(CollisionMapInfo& info) {
 
 	MapChipField::IndexSet indexSet;
 
-    indexSet = mapChipField_->GetmapChipIndexSetByPosition(positionsNew[kRightTop]);
+	indexSet = mapChipField_->GetmapChipIndexSetByPosition(positionsNew[kRightTop]);
 	mapChipType = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
 	MapChipType mapChipTypeNext = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex - 1, indexSet.yIndex);
 	if (mapChipType == MapChipType::kBlock && mapChipTypeNext != MapChipType::kBlock) {
@@ -332,7 +349,7 @@ void Player::CheckHitLeft(CollisionMapInfo& info) {
 
 	MapChipField::IndexSet indexSet;
 
-    indexSet = mapChipField_->GetmapChipIndexSetByPosition(positionsNew[kLeftTop]);
+	indexSet = mapChipField_->GetmapChipIndexSetByPosition(positionsNew[kLeftTop]);
 	mapChipType = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
 	MapChipType mapChipTypeNext = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex + 1, indexSet.yIndex);
 	if (mapChipType == MapChipType::kBlock && mapChipTypeNext != MapChipType::kBlock) {
@@ -483,12 +500,36 @@ void Player::OnCollision(const Enemy* enemy) {
 	isDead_ = true;
 }
 
-void Player::BehaviorRootInitialize() {}
+void Player::OnCollision(const ShieldEnemy* shieldEnemy) {
+
+	(void)shieldEnemy;
+
+	if (IsAttack()) {
+
+		return;
+	}
+
+	// velocity_ = MyMath::Add(velocity_, Vector3({0.0f, 0.0f, 0.0f}));
+
+	isDead_ = true;
+}
+
+void Player::BehaviorRootInitialize() {
+	worldTransform_.scale_ = {1.0f, 1.0f, 1.0f};
+
+}
 
 void Player::BehaviorAttackInitialize() {
 	attackPhase_ = AttackPhase::kCharge;
 	attackParameter_ = 0;
 	velocity_ = {0.0f, 0.0f, 0.0f};
+}
+
+void Player::BehaviorKnockBackInitialize() {
+	knockBackPhase_ = KnockbackPhase::kKnockingBack;
+	knockbackParameter_ = 0;
+	velocity_ = {0.0f, 0.0f, 0.0f};
+	worldTransform_.scale_ = {1.0f, 1.0f, 1.0f};
 }
 
 void Player::BehaviorRootUpdate() {
@@ -600,6 +641,69 @@ void Player::BehaviorAttackUpdate() {
 		} else {
 			velocity.x = -0.5f;
 		}
+		break;
+	}
+
+	CollisionMapInfo collisionMapInfo;
+
+	collisionMapInfo.moveAmount = velocity;
+
+	CheckHitMap(collisionMapInfo);
+
+	ResolveMovement(collisionMapInfo);
+
+	ResolveCeilingCollision(collisionMapInfo);
+
+	ResolveWallCollision(collisionMapInfo);
+
+	SwitchLandingState(collisionMapInfo);
+
+	worldTransformAttack_.translation_ = worldTransform_.translation_;
+	worldTransformAttack_.rotation_ = worldTransform_.rotation_;
+
+	ClampToScreen();
+	worldTransform_.matWorld_ = MyMath::MakeAffinMatrix(worldTransform_.scale_, worldTransform_.rotation_, worldTransform_.translation_);
+	worldTransformAttack_.matWorld_ = MyMath::MakeAffinMatrix(worldTransformAttack_.scale_, worldTransformAttack_.rotation_, worldTransformAttack_.translation_);
+	worldTransform_.TransferMatrix();
+	worldTransformAttack_.TransferMatrix();
+}
+
+void Player::BehaviorKnockBackUpdate() {
+	Vector3 velocity{};
+	switch (knockBackPhase_) {
+
+	case KnockbackPhase::kKnockingBack:
+
+		knockbackParameter_++;
+
+		if (lrDirection_ == LRDirection::kRight) {
+
+			velocity.x = -0.7f;
+
+		} else {
+			velocity.x = 0.7f;
+		}
+
+		if (knockbackParameter_ > 3) {
+
+			knockBackPhase_ = KnockbackPhase::kRecovery;
+			knockbackParameter_ = 0;
+		}
+
+		break;
+
+	case KnockbackPhase::kRecovery:
+
+		knockbackParameter_++;
+
+		velocity.x = 0.0f;
+
+		if (knockbackParameter_ > 3) {
+
+			knockbackParameter_ = 0;
+			behaviorRequest_ = Behavior::kRoot;
+		}
+
 		break;
 	}
 

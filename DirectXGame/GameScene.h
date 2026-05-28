@@ -9,6 +9,8 @@
 #include "Player.h"
 #include "Skydome.h"
 #include"HitEffect.h"
+#include"ShieldEnemy.h"
+#include"GuardEffect.h"
 #include <memory>
 #include <vector>
 
@@ -41,6 +43,9 @@ private:
 	std::list<Enemy*> enemies_;
 	KamataEngine::Model* modelEnemy_ = nullptr;
 
+	std::list<ShieldEnemy*> shieldEnemies_;
+	KamataEngine::Model* modelShieldEnemy_ = nullptr;
+
 	DeathParticles* deathParticles_ = nullptr;
 	KamataEngine::Model* modelDeathParticles_ = nullptr;
 
@@ -52,6 +57,9 @@ private:
 
 	KamataEngine::Model* modelHitEffect_ = nullptr;
 	std::list<HitEffect*> hitEffects_;
+
+	KamataEngine::Model* modelGuardEffect_ = nullptr;
+	std::list<GuardEffect*> guardEffects_;
 
 public:
 	GameScene();
@@ -72,5 +80,6 @@ public:
 	bool IsFinished() const { return finished_; }
 
 	void CreateHitEffect(KamataEngine::Vector3 pos);
+	void CreateGuardEffect(KamataEngine::Vector3 pos);
 
 };

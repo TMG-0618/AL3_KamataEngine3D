@@ -10,6 +10,7 @@ enum class LRDirection {
 class MapChipField;
 
 class Enemy;
+class ShieldEnemy;
 class CameraController;
 
 class Player {
@@ -35,13 +36,18 @@ private:
 		kUnknown,
 		kRoot,
 		kAttack,
-
+		kKnockback,
 	};
 
 	enum class AttackPhase {
 		kCharge,
 		kTackle,
 		kRemaining,
+	};
+
+	enum class KnockbackPhase {
+		kKnockingBack,
+		kRecovery,
 	};
 
 	KamataEngine::WorldTransform worldTransform_;
@@ -82,12 +88,16 @@ private:
 
 	bool isDead_ = false;
 
+	bool isRequestKnockback_ = false;
+
 	Behavior behavior_ = Behavior::kRoot;
 	Behavior behaviorRequest_ = Behavior::kUnknown;
 
 	uint32_t attackParameter_ = 0;
-
 	AttackPhase attackPhase_;
+
+	uint32_t knockbackParameter_ = 0;
+	KnockbackPhase knockBackPhase_;
 
 	KamataEngine::Model* modelAttack_ = nullptr;
 	KamataEngine::WorldTransform worldTransformAttack_;
@@ -130,18 +140,25 @@ public:
 
 
 	void OnCollision(const Enemy* enemy);
+	void OnCollision(const ShieldEnemy* enemy);
 
 	bool IsDead() const { return isDead_; }
 	
 	void BehaviorRootInitialize();
 	void BehaviorAttackInitialize();
+	void BehaviorKnockBackInitialize();
 
 	void BehaviorRootUpdate();
 	void BehaviorAttackUpdate();
+	void BehaviorKnockBackUpdate();
 
 	bool IsAttack() const;
 
 	void ClampToScreen();
 
 	void SetCameraController(CameraController* cc) { cameraController_ = cc; }
+
+	LRDirection GetLRDirection()const { return lrDirection_; }
+
+	void RequestKnockBack() { isRequestKnockback_ = true; }
 };
