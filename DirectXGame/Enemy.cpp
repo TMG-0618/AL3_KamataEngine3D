@@ -1,8 +1,9 @@
 #include "Enemy.h"
+#include "GameScene.h"
 #include "MyMath.h"
+#include "Player.h"
 #include <assert.h>
 #include <numbers>
-#include"Player.h"
 
 using namespace KamataEngine;
 
@@ -48,8 +49,6 @@ void Enemy::Update() {
 		BehaviorDeathUpdate();
 		break;
 	}
-
-
 }
 
 void Enemy::Draw() {
@@ -96,6 +95,15 @@ void Enemy::OnCollision(const Player* player) {
 
 		behaviorRequest_ = Behavior::kDeath;
 		isCollisionDisabled_ = true;
+
+		Vector3 effectPos = MyMath::MyMath::Add(GetWorldPosition(), player->GetWorldPosition());
+		effectPos.x /= 2.0f;
+		effectPos.y /= 2.0f;
+		effectPos.z /= 2.0f;
+
+		assert(gameScene_);
+
+		gameScene_->CreateHitEffect(effectPos);
 	}
 }
 
@@ -125,7 +133,7 @@ void Enemy::BehaviorMoveUpdate() {
 	worldTransform_.TransferMatrix();
 }
 
-void Enemy::BehaviorDeathUpdate() { 
+void Enemy::BehaviorDeathUpdate() {
 	deathParameter_++;
 
 	worldTransform_.rotation_.x = MyMath::EaseOut(worldTransform_.rotation_.x, -std::numbers::pi_v<float> / 2.0f, static_cast<float>(deathParameter_) / 60.0f);
@@ -137,12 +145,12 @@ void Enemy::BehaviorDeathUpdate() {
 		worldTransform_.scale_.y = MyMath::EaseOut(worldTransform_.scale_.y, 0.0f, static_cast<float>(deathParameter_) / 45.0f);
 		worldTransform_.scale_.z = MyMath::EaseOut(worldTransform_.scale_.z, 0.0f, static_cast<float>(deathParameter_) / 45.0f);
 	}
-		worldTransform_.matWorld_ = MyMath::MakeAffinMatrix(worldTransform_.scale_, worldTransform_.rotation_, worldTransform_.translation_);
+	worldTransform_.matWorld_ = MyMath::MakeAffinMatrix(worldTransform_.scale_, worldTransform_.rotation_, worldTransform_.translation_);
 	worldTransform_.TransferMatrix();
 
 	if (deathParameter_ >= 60) {
 		isDead_ = true;
 	}
 
-	//isDead_ = true;
+	// isDead_ = true;
 }

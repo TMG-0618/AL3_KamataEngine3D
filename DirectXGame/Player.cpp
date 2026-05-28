@@ -446,7 +446,7 @@ void Player::ResolveWallCollision(const CollisionMapInfo& info) {
 	}
 }
 
-Vector3 Player::GetWorldPosition() {
+Vector3 Player::GetWorldPosition() const {
 
 	Vector3 worldPos;
 

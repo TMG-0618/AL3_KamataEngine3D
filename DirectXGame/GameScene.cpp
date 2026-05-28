@@ -1,7 +1,6 @@
 #include "GameScene.h"
 #include "MyMath.h"
 
-
 using namespace KamataEngine;
 
 GameScene::GameScene() { Initialize(); }
@@ -63,7 +62,7 @@ void GameScene::Initialize() {
 		Enemy* newEnemy = new Enemy();
 		Vector3 enemyPosition = mapChipField_->GetMapChipPositionByIndex(5 + 5 * i, 18 - 2 * i);
 		newEnemy->Initialize(modelEnemy_, camera_, enemyPosition);
-
+		newEnemy->SetGameScene(this);
 		enemies_.push_back(newEnemy);
 	}
 	deathParticles_ = new DeathParticles();
@@ -75,8 +74,8 @@ void GameScene::Initialize() {
 	cameraController_->Initialize(camera_);
 	cameraController_->SetTarget(player_);
 	cameraController_->Reset();
-	cameraController_->SetMovableArea({10.0f,89.0f, 5.0f, 15.0f});
-	cameraController_->SetMode(CameraController::Mode::kForcedScroll);
+	cameraController_->SetMovableArea({10.0f, 89.0f, 5.0f, 15.0f});
+	cameraController_->SetMode(CameraController::Mode::kFollow);
 
 	player_->SetCameraController(cameraController_);
 
@@ -92,6 +91,20 @@ void GameScene::Initialize() {
 	fade_ = new Fade();
 	fade_->Initialize();
 	fade_->Start(Fade::Status::FadeIn, 1.0f);
+
+	modelHitEffect_ = Model::CreateFromOBJ("particle", true);
+
+	HitEffect::SetModel(modelHitEffect_);
+	HitEffect::SetCamera(camera_);
+
+	for (int i = 0; i < 3; i++) {
+
+		HitEffect* newHitEffect = new HitEffect();
+		Vector3 hitEffectPosition = {0.0f, 0.0f, 0.0f};
+		newHitEffect->Initialize(hitEffectPosition);
+
+		hitEffects_.push_back(newHitEffect);
+	}
 }
 
 void GameScene::Update() {
@@ -221,6 +234,10 @@ void GameScene::Update() {
 		enemy->Update();
 	}
 
+	for (HitEffect* hitEffect : hitEffects_) {
+		hitEffect->Update();
+	}
+
 	ChangePhase();
 }
 
@@ -242,6 +259,10 @@ void GameScene::Draw() {
 
 	for (Enemy* enemy : enemies_) {
 		enemy->Draw();
+	}
+
+	for (HitEffect* hitEffect : hitEffects_) {
+		hitEffect->Draw();
 	}
 
 	if (deathParticles_) {
@@ -323,6 +344,7 @@ void GameScene::ChangePhase() {
 
 	switch (phase_) {
 
+	case Phase::kFadeIn:
 	case Phase::kPlay:
 
 		if (player_->IsDead()) {
@@ -340,4 +362,10 @@ void GameScene::ChangePhase() {
 
 		break;
 	}
+}
+
+void GameScene::CreateHitEffect(KamataEngine::Vector3 pos) {
+
+	HitEffect* newHitEffect = HitEffect::Create(pos);
+	hitEffects_.push_back(newHitEffect);
 }

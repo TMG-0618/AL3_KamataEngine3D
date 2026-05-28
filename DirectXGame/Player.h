@@ -125,7 +125,7 @@ public:
 	KamataEngine::WorldTransform& GetWorldTransform() { return worldTransform_; }
 	const KamataEngine::Vector3& GetVelocity() const { return velocity_; }
 
-	KamataEngine::Vector3 GetWorldPosition();
+	KamataEngine::Vector3 GetWorldPosition() const;
 	AABB GetAABB();
 
 

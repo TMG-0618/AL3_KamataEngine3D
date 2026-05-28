@@ -3,6 +3,7 @@
 #include "KamataEngine.h"
 
 class Player;
+class GameScene;
 
 class Enemy {
 
@@ -40,6 +41,8 @@ private:
 
 	bool isCollisionDisabled_ = false;
 
+	GameScene* gameScene_ = nullptr;;
+
 public:
 	Enemy();
 	~Enemy();
@@ -61,4 +64,6 @@ public:
 
 	void BehaviorMoveUpdate();
 	void BehaviorDeathUpdate();
+
+	void SetGameScene(GameScene* gameScene) { gameScene_ = gameScene; }
 };

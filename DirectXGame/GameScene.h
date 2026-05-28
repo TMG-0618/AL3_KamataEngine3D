@@ -8,6 +8,7 @@
 #include "MapChipField.h"
 #include "Player.h"
 #include "Skydome.h"
+#include"HitEffect.h"
 #include <memory>
 #include <vector>
 
@@ -49,6 +50,9 @@ private:
 
 	bool finished_ = false;
 
+	KamataEngine::Model* modelHitEffect_ = nullptr;
+	std::list<HitEffect*> hitEffects_;
+
 public:
 	GameScene();
 	~GameScene();
@@ -66,4 +70,7 @@ public:
 	void ChangePhase();
 
 	bool IsFinished() const { return finished_; }
+
+	void CreateHitEffect(KamataEngine::Vector3 pos);
+
 };
