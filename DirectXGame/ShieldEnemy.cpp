@@ -40,6 +40,11 @@ void ShieldEnemy::Update() {
 		case Behavior::kDeath:
 			BehaviorDeathInitialize();
 			break;
+
+		case Behavior::kGuard:
+			BehaviorGuardInitialize();
+			break;
+
 		default:
 			break;
 		}
@@ -53,6 +58,10 @@ void ShieldEnemy::Update() {
 
 	case Behavior::kDeath:
 		BehaviorDeathUpdate();
+		break;
+
+	case Behavior::kGuard:
+		BehaviorGuardUpdate();
 		break;
 	}
 }
@@ -107,17 +116,14 @@ void ShieldEnemy::OnCollision(Player* player) {
 		assert(gameScene_);
 		if (int(player->GetLRDirection()) != int(shieldLRDirection_)) {
 			gameScene_->CreateGuardEffect(effectPos);
-
+			behaviorRequest_ = Behavior::kGuard;
 			player->RequestKnockBack();
 
 			return;
 		}
 
-
 		behaviorRequest_ = Behavior::kDeath;
 		isCollisionDisabled_ = true;
-
-
 
 		gameScene_->CreateHitEffect(effectPos);
 	}
@@ -126,7 +132,7 @@ void ShieldEnemy::OnCollision(Player* player) {
 void ShieldEnemy::BehaviorMoveInitialize() {
 	velocity_ = {-kWalkSpeed, 0, 0};
 	walkTimer_ = 0.0f;
-	worldTransform_.rotation_.y = -std::numbers::pi_v<float> / 2.0f;
+	worldTransform_.rotation_.y = shieldLRDirection_ == ShieldLRDirection::kLeft ? -std::numbers::pi_v<float> / 2.0f : std::numbers::pi_v<float> / 2.0f;
 }
 
 void ShieldEnemy::BehaviorDeathInitialize() {
@@ -135,7 +141,12 @@ void ShieldEnemy::BehaviorDeathInitialize() {
 }
 
 void ShieldEnemy::BehaviorGuardInitialize() {
-
+	guardParameter_ = 0;
+	velocity_ = {0.0f, 0.0f, 0.0f};
+	worldTransform_.rotation_.z = 0.0f;
+	worldTransform_.rotation_.y = shieldLRDirection_ == ShieldLRDirection::kLeft ? -std::numbers::pi_v<float> / 2.0f : std::numbers::pi_v<float> / 2.0f;
+	worldTransform_.matWorld_ = MyMath::MakeAffinMatrix(worldTransform_.scale_, worldTransform_.rotation_, worldTransform_.translation_);
+	worldTransform_.TransferMatrix();
 }
 
 void ShieldEnemy::BehaviorMoveUpdate() {
@@ -173,11 +184,16 @@ void ShieldEnemy::BehaviorDeathUpdate() {
 		isDead_ = true;
 	}
 
-	// isDead_ = true;
 }
 
 void ShieldEnemy::BehaviorGuardUpdate() {
+	guardParameter_++;
 
+	worldTransform_.rotation_.z = MyMath::EaseOut(0.0f, std::numbers::pi_v<float> / 4.0f * (shieldLRDirection_ == ShieldLRDirection::kLeft ? -1.0f : 1.0f), sin(std ::numbers::pi_v<float> * guardParameter_ / 30.0f));
 
-
+	if (guardParameter_ >= 30) {
+		behaviorRequest_ = Behavior::kMove;
+	}
+	worldTransform_.matWorld_ = MyMath::MakeAffinMatrix(worldTransform_.scale_, worldTransform_.rotation_, worldTransform_.translation_);
+	worldTransform_.TransferMatrix();
 }

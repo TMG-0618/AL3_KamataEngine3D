@@ -24,6 +24,7 @@ private:
 	KamataEngine::WorldTransform worldTransform_;
 	KamataEngine::Model* model_ = nullptr;
 	KamataEngine::Camera* camera_ = nullptr;
+	GameScene* gameScene_ = nullptr;
 
 	static inline const float kWalkSpeed = 0.02f;
 
@@ -48,10 +49,8 @@ private:
 	int deathParameter_ = 0;
 
 	bool isCollisionDisabled_ = false;
-
-	GameScene* gameScene_ = nullptr;
-
 	ShieldLRDirection shieldLRDirection_ = ShieldLRDirection::kLeft;
+	int guardParameter_ = 0;
 
 public:
 	ShieldEnemy();
