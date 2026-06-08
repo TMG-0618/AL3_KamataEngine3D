@@ -12,6 +12,7 @@
 #include <memory>
 #include <vector>
 
+class StageManager;
 
 enum class Phase {
 	kFadeIn,
@@ -60,12 +61,13 @@ private:
 
 	bool reloadRequested_ = false;
 
+	StageManager* stageManager_ = nullptr;
 
 public:
 	GameScene();
 	~GameScene();
 
-	void Initialize();
+	void Initialize(StageManager* stageManager);
 	void Update();
 	void Draw();
 

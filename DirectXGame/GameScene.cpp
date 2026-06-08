@@ -5,11 +5,11 @@
 #include "MyMath.h"
 #include "ShieldEnemy.h"
 #include<imgui.h>
+#include"StageManager.h"
 
 using namespace KamataEngine;
 
-GameScene::GameScene() { Initialize(); }
-
+GameScene::GameScene() {}
 GameScene::~GameScene() {
 
 	delete model_;
@@ -36,13 +36,16 @@ GameScene::~GameScene() {
 	delete deathParticles_;
 }
 
-void GameScene::Initialize() {
-
+void GameScene::Initialize(StageManager* stageManager) {
+	stageManager_ = stageManager;
 	phase_ = Phase::kFadeIn;
 
 	// マップチップ
 	mapChipField_ = new MapChipField;
-	mapChipField_->LoadMapChipCsv("Resources/blocks.csv");
+	const StageData& stageData = stageManager_->GetCurrentStageData();
+
+	std::string stageFileName = "Resources/fields/" + stageData.name + ".csv";
+	mapChipField_->LoadMapChipCsv(stageFileName);
 
 	modelPlayer_ = Model::CreateFromOBJ("player", true);
 	modelAttack_ = Model::CreateFromOBJ("hit_effect", true);

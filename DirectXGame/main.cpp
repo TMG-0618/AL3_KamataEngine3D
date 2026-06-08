@@ -1,9 +1,9 @@
 #include "GameScene.h"
 #include "KamataEngine.h"
-#include<imGui_impl_dx12.h>
-#include<imGui_impl_win32.h>
 #include "TitleScene.h"
 #include <Windows.h>
+#include"StageManager.h"
+#include<fstream>
 
 using namespace KamataEngine;
 
@@ -17,11 +17,13 @@ enum class Scene {
 Scene scene = Scene::kUnknown;
 GameScene* gameScene = nullptr;
 TitleScene* titleScene = nullptr;
+StageManager* stageManager = nullptr;
 
 //プロトタイプ宣言
 void ChangeScene();
 void UpdateScene();
 void DrawScene();
+void LoadDebugSettings();
 
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
@@ -30,17 +32,22 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	KamataEngine::Initialize(L"LC1A_14_タナカ_ミヅキ_AL3");
 	DirectXCommon* dxCommon = DirectXCommon::GetInstance();
 	ImGuiManager* imguiManager = ImGuiManager::GetInstance();
+	stageManager = new StageManager();
+	stageManager->LoadStageData("Resources/stageData.csv");
 
 	scene = Scene::kTitle;
 #ifdef _DEBUG
 
+	LoadDebugSettings();
+
 	scene = Scene::kGame;
+	gameScene = new GameScene();
+	gameScene->Initialize(stageManager);
 
 #endif
 	titleScene = new TitleScene();
 	titleScene->Initialize();
 
-	gameScene = new GameScene();
 
 	// ループ
 	while (true) {
@@ -81,6 +88,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 	delete gameScene;
 	delete titleScene;
+	delete stageManager;
 	gameScene = nullptr;
 
 	return 0;
@@ -117,7 +125,7 @@ void ChangeScene() {
 			delete gameScene;
 			gameScene = nullptr;
 			gameScene = new GameScene;
-			gameScene->Initialize();
+			gameScene->Initialize(stageManager);
 		}
 
 		break;
@@ -161,5 +169,31 @@ void DrawScene() {
 		gameScene->Draw();
 
 		break;
+	}
+}
+
+void LoadDebugSettings() { 
+	std::ifstream file;
+	file.open("debugSettings.ini");
+
+	assert(file.is_open() && "debugSettings.iniはありません");
+
+	std::stringstream debugSettings;
+	debugSettings << file.rdbuf();
+	file.close();
+	std::string line;
+
+	getline(debugSettings, line);
+	std::stringstream lineStream(line);
+
+	std::string word;
+	std::getline(lineStream, word, ',');
+	std::string key = word;
+
+	std::getline(lineStream, word, ',');
+	std::string value = word;
+
+	if (key == "InitialStage") {
+		stageManager->SetCurrentStageIndexByName(value);
 	}
 }
