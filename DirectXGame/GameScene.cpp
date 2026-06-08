@@ -1,9 +1,10 @@
 #include "GameScene.h"
-#include "MyMath.h"
 #include "Enemy.h"
-#include"ShieldEnemy.h"
-#include"HitEffect.h"
-#include"GuardEffect.h"
+#include "GuardEffect.h"
+#include "HitEffect.h"
+#include "MyMath.h"
+#include "ShieldEnemy.h"
+#include<imgui.h>
 
 using namespace KamataEngine;
 
@@ -37,49 +38,22 @@ GameScene::~GameScene() {
 
 void GameScene::Initialize() {
 
-#ifdef _DEBUG
-
-#endif
 	phase_ = Phase::kFadeIn;
 
 	// マップチップ
 	mapChipField_ = new MapChipField;
 	mapChipField_->LoadMapChipCsv("Resources/blocks.csv");
 
-	// ブロック
-	GenerateBlocks();
+	modelPlayer_ = Model::CreateFromOBJ("player", true);
+	modelAttack_ = Model::CreateFromOBJ("hit_effect", true);
 
 	// カメラ
 	camera_ = new Camera();
 	camera_->farZ = 2000.0f;
 	camera_->Initialize();
 
-	// プレイヤー
-	SpawnPlayer();
-
-	player_->SetMapChipField(mapChipField_);
-
-	// 敵
-	modelEnemy_ = Model::CreateFromOBJ("Enemy", true);
-	for (int32_t i = 0; i < 3; ++i) {
-
-		Enemy* newEnemy = new Enemy();
-		Vector3 enemyPosition = mapChipField_->GetMapChipPositionByIndex(5 + 5 * i, 18 - 2 * i);
-		newEnemy->Initialize(modelEnemy_, camera_, enemyPosition);
-		newEnemy->SetGameScene(this);
-		enemies_.push_back(newEnemy);
-	}
-
-	// 敵
-	modelShieldEnemy_ = Model::CreateFromOBJ("shieldEnemy", true);
-	for (int32_t i = 0; i < 3; ++i) {
-
-		ShieldEnemy* newShieldEnemy = new ShieldEnemy();
-		Vector3 shieldEnemyPosition = mapChipField_->GetMapChipPositionByIndex(6 + 5 * i, 18 - 2 * i);
-		newShieldEnemy->Initialize(modelShieldEnemy_, camera_, shieldEnemyPosition);
-		newShieldEnemy->SetGameScene(this);
-		enemies_.push_back(newShieldEnemy);
-	}
+	// マップチップからフィールドオブジェクト生成
+	GenerateFieldObjects();
 
 	deathParticles_ = new DeathParticles();
 	modelDeathParticles_ = Model::CreateFromOBJ("deathParticle", true);
@@ -138,6 +112,18 @@ void GameScene::Initialize() {
 }
 
 void GameScene::Update() {
+
+#ifdef _DEBUG
+
+	ImGui::Begin("reload");
+
+	if (ImGui::Button("reload")) {
+		reloadRequested_ = true;
+	}
+
+	ImGui::End();
+
+#endif
 
 	skydome_->Update();
 	switch (phase_) {
@@ -301,7 +287,7 @@ void GameScene::Draw() {
 	fade_->Draw();
 }
 
-void GameScene::GenerateBlocks() {
+void GameScene::GenerateFieldObjects() {
 	const uint32_t kNumBlockVirtical = mapChipField_->GetNumBlockVirtical();
 	const uint32_t kNumBlockHorizontal = mapChipField_->GetNumBlockHorizontal();
 
@@ -314,25 +300,67 @@ void GameScene::GenerateBlocks() {
 
 	for (uint32_t i = 0; i < kNumBlockVirtical; ++i) {
 		for (uint32_t j = 0; j < kNumBlockHorizontal; ++j) {
+			MapChipType mapChipType = mapChipField_->GetMapChipTypeByIndex(j, i);
 
-			if (mapChipField_->GetMapChipTypeByIndex(j, i) == MapChipType::kBlock) {
-
+			switch (mapChipType) {
+			case MapChipType::kBlock:
 				worldTransformBlocks_[i][j] = new WorldTransform();
 				worldTransformBlocks_[i][j]->Initialize();
 				worldTransformBlocks_[i][j]->translation_ = mapChipField_->GetMapChipPositionByIndex(j, i);
+				break;
+			case MapChipType::kPlayer: {
+
+				player_ = new Player();
+
+				Vector3 playerPosition = mapChipField_->GetMapChipPositionByIndex(j, i);
+				player_->Initialize(modelPlayer_, modelAttack_, camera_, playerPosition);
+
+				player_->SetMapChipField(mapChipField_);
+
+				break;
+			}
+
+			case MapChipType::kEnemy: {
+
+				uint8_t subID = mapChipField_->GetMapChipSubIDByIndex(j, i);
+
+				switch (subID) {
+				case 0: {
+
+					modelEnemy_ = Model::CreateFromOBJ("Enemy", true);
+
+					Enemy* newEnemy = new Enemy();
+					Vector3 enemyPosition = mapChipField_->GetMapChipPositionByIndex(j,i);
+					newEnemy->Initialize(modelEnemy_, camera_, enemyPosition);
+					newEnemy->SetGameScene(this);
+					enemies_.push_back(newEnemy);
+
+					break;
+				}
+
+				case 1: {
+
+					modelShieldEnemy_ = Model::CreateFromOBJ("shieldEnemy", true);
+
+					ShieldEnemy* newShieldEnemy = new ShieldEnemy();
+					Vector3 shieldEnemyPosition = mapChipField_->GetMapChipPositionByIndex(j,i);
+					newShieldEnemy->Initialize(modelShieldEnemy_, camera_, shieldEnemyPosition);
+					newShieldEnemy->SetGameScene(this);
+					enemies_.push_back(newShieldEnemy);
+
+					break;
+				}
+				default:
+
+					break;
+				}
+			}
+
+			default:
+				break;
 			}
 		}
 	}
-}
-
-void GameScene::SpawnPlayer() {
-
-	modelPlayer_ = Model::CreateFromOBJ("player", true);
-	modelAttack_ = Model::CreateFromOBJ("hit_effect", true);
-	player_ = new Player();
-
-	Vector3 playerPosition = mapChipField_->GetMapChipPositionByIndex(1, 18);
-	player_->Initialize(modelPlayer_, modelAttack_, camera_, playerPosition);
 }
 
 void GameScene::CheckAllCollisions() {
@@ -359,7 +387,6 @@ void GameScene::CheckAllCollisions() {
 		}
 	}
 #pragma endregion
-
 }
 
 bool GameScene::AABBCheckCollision(AABB& aabb1, AABB& aabb2) {

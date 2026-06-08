@@ -1,5 +1,7 @@
 #include "GameScene.h"
 #include "KamataEngine.h"
+#include<imGui_impl_dx12.h>
+#include<imGui_impl_win32.h>
 #include "TitleScene.h"
 #include <Windows.h>
 
@@ -27,6 +29,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	// 初期化
 	KamataEngine::Initialize(L"LC1A_14_タナカ_ミヅキ_AL3");
 	DirectXCommon* dxCommon = DirectXCommon::GetInstance();
+	ImGuiManager* imguiManager = ImGuiManager::GetInstance();
+
 	scene = Scene::kTitle;
 #ifdef _DEBUG
 
@@ -52,7 +56,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 		ChangeScene();
 
+		imguiManager->Begin();
 		UpdateScene();
+		imguiManager->End();
 
 		// 描画開始地点
 		dxCommon->PreDraw();
@@ -63,6 +69,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		// titleScene->Draw();
 
 		DrawScene();
+
+		imguiManager->Draw();
 
 		// 描画終了地点
 		dxCommon->PostDraw();
@@ -105,6 +113,11 @@ void ChangeScene() {
 
 			titleScene = new TitleScene;
 			titleScene->Initialize();
+		} else if (gameScene->IsReloadRequested()) {
+			delete gameScene;
+			gameScene = nullptr;
+			gameScene = new GameScene;
+			gameScene->Initialize();
 		}
 
 		break;
@@ -112,6 +125,8 @@ void ChangeScene() {
 }
 
 void UpdateScene() {
+
+
 
 	switch (scene) {
 
@@ -127,6 +142,8 @@ void UpdateScene() {
 
 		break;
 	}
+
+
 }
 
 void DrawScene() {

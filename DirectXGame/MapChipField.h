@@ -5,10 +5,20 @@ enum class MapChipType {
 	kBlank,
 	kBlock,
 	kPlayer,
+	kEnemy,
+};
+enum MapChipCharIndex {
+	kChipType = 0,
+	kChipSubID = 1,
+};
+
+struct MapChipDataUint {
+	MapChipType type;
+	uint8_t subID;
 };
 
 struct MapChipData {
-	std::vector<std::vector<MapChipType>> data;
+	std::vector<std::vector<MapChipDataUint>> data;
 };
 
 class MapChipField {
@@ -29,7 +39,7 @@ public:
 	};
 
 	struct Rect {
-	
+
 		float left;
 		float right;
 		float bottom;
@@ -37,7 +47,6 @@ public:
 	};
 
 public:
-
 	void ResetMapChipData();
 
 	void LoadMapChipCsv(const std::string& filePath);
@@ -51,5 +60,5 @@ public:
 	uint32_t GetNumBlockHorizontal() { return kNumBlockHorizontal; };
 	IndexSet GetmapChipIndexSetByPosition(const KamataEngine::Vector3& position);
 	Rect GetRectByIndex(uint32_t xIndex, uint32_t yIndex);
-
+	uint8_t GetMapChipSubIDByIndex(uint32_t xIndex, uint32_t yIndex);
 };

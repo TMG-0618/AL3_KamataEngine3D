@@ -12,6 +12,7 @@
 #include <memory>
 #include <vector>
 
+
 enum class Phase {
 	kFadeIn,
 	kPlay,
@@ -57,6 +58,9 @@ private:
 	KamataEngine::Model* modelHitEffect_ = nullptr;
 	KamataEngine::Model* modelGuardEffect_ = nullptr;
 
+	bool reloadRequested_ = false;
+
+
 public:
 	GameScene();
 	~GameScene();
@@ -65,8 +69,7 @@ public:
 	void Update();
 	void Draw();
 
-	void GenerateBlocks();
-	void SpawnPlayer();
+	void GenerateFieldObjects();
 
 	void CheckAllCollisions();
 	bool AABBCheckCollision(AABB& aabb1, AABB& aabb2);
@@ -78,5 +81,6 @@ public:
 	void CreateHitEffect(KamataEngine::Vector3 pos);
 	void CreateGuardEffect(KamataEngine::Vector3 pos);
 
+	bool IsReloadRequested() const { return reloadRequested_; }
 };
 
