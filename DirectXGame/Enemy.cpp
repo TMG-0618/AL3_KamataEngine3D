@@ -85,7 +85,7 @@ AABB Enemy::GetAABB() {
 	return aabb;
 }
 
-void Enemy::OnCollision(const Player* player) {
+void Enemy::OnCollision(Player* player) {
 	(void)player;
 	if (behavior_ == Behavior::kDeath) {
 		return;

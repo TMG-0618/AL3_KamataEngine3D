@@ -1,5 +1,9 @@
 #include "GameScene.h"
 #include "MyMath.h"
+#include "Enemy.h"
+#include"ShieldEnemy.h"
+#include"HitEffect.h"
+#include"GuardEffect.h"
 
 using namespace KamataEngine;
 
@@ -20,11 +24,6 @@ GameScene::~GameScene() {
 	while (!enemies_.empty()) {
 		delete enemies_.front();
 		enemies_.pop_front();
-	}
-
-	while (!shieldEnemies_.empty()) {
-		delete shieldEnemies_.front();
-		shieldEnemies_.pop_front();
 	}
 
 	worldTransformBlocks_.clear();
@@ -79,7 +78,7 @@ void GameScene::Initialize() {
 		Vector3 shieldEnemyPosition = mapChipField_->GetMapChipPositionByIndex(6 + 5 * i, 18 - 2 * i);
 		newShieldEnemy->Initialize(modelShieldEnemy_, camera_, shieldEnemyPosition);
 		newShieldEnemy->SetGameScene(this);
-		shieldEnemies_.push_back(newShieldEnemy);
+		enemies_.push_back(newShieldEnemy);
 	}
 
 	deathParticles_ = new DeathParticles();
@@ -120,7 +119,7 @@ void GameScene::Initialize() {
 		Vector3 hitEffectPosition = {0.0f, 0.0f, 0.0f};
 		newHitEffect->Initialize(hitEffectPosition);
 
-		hitEffects_.push_back(newHitEffect);
+		effects_.push_back(newHitEffect);
 	}
 
 	modelGuardEffect_ = Model::CreateFromOBJ("ring", true);
@@ -134,7 +133,7 @@ void GameScene::Initialize() {
 		Vector3 guardEffectPosition = {0.0f, 0.0f, 0.0f};
 		newGuardEffect->Initialize(guardEffectPosition);
 
-		guardEffects_.push_back(newGuardEffect);
+		effects_.push_back(newGuardEffect);
 	}
 }
 
@@ -252,7 +251,7 @@ void GameScene::Update() {
 		break;
 	}
 
-	enemies_.remove_if([](Enemy* enemy) {
+	enemies_.remove_if([](BaseEnemy* enemy) {
 		if (enemy->IsDead()) {
 
 			delete enemy;
@@ -261,29 +260,12 @@ void GameScene::Update() {
 		return false;
 	});
 
-	for (Enemy* enemy : enemies_) {
+	for (BaseEnemy* enemy : enemies_) {
 		enemy->Update();
 	}
 
-	shieldEnemies_.remove_if([](ShieldEnemy* shieldEnemy) {
-		if (shieldEnemy->IsDead()) {
-
-			delete shieldEnemy;
-			return true;
-		}
-		return false;
-	});
-
-	for (ShieldEnemy* shieldEnemy : shieldEnemies_) {
-		shieldEnemy->Update();
-	}
-
-	for (HitEffect* hitEffect : hitEffects_) {
-		hitEffect->Update();
-	}
-
-	for (GuardEffect* guardEffect : guardEffects_) {
-		guardEffect->Update();
+	for (BaseEffect* effect : effects_) {
+		effect->Update();
 	}
 
 	ChangePhase();
@@ -305,22 +287,13 @@ void GameScene::Draw() {
 
 	player_->Draw();
 
-	for (Enemy* enemy : enemies_) {
+	for (BaseEnemy* enemy : enemies_) {
 		enemy->Draw();
 	}
 
-	for (ShieldEnemy* shieldEnemy : shieldEnemies_) {
-		shieldEnemy->Draw();
+	for (BaseEffect* effect : effects_) {
+		effect->Draw();
 	}
-
-	for (HitEffect* hitEffect : hitEffects_) {
-		hitEffect->Draw();
-	}
-
-	for (GuardEffect* guardEffect : guardEffects_) {
-		guardEffect->Draw();
-	}
-
 	if (deathParticles_) {
 		deathParticles_->Draw();
 	}
@@ -370,7 +343,7 @@ void GameScene::CheckAllCollisions() {
 
 		aabb1 = player_->GetAABB();
 
-		for (Enemy* enemy : enemies_) {
+		for (BaseEnemy* enemy : enemies_) {
 
 			if (enemy->IsCollisionDisabled()) {
 				continue;
@@ -387,28 +360,6 @@ void GameScene::CheckAllCollisions() {
 	}
 #pragma endregion
 
-#pragma region 自キャラと盾持ち敵キャラの当たり判定
-	{
-		AABB aabb1, aabb2;
-
-		aabb1 = player_->GetAABB();
-
-		for (ShieldEnemy* shieldEnemy : shieldEnemies_) {
-
-			if (shieldEnemy->IsCollisionDisabled()) {
-				continue;
-			}
-
-			aabb2 = shieldEnemy->GetAABB();
-
-			if (AABBCheckCollision(aabb1, aabb2)) {
-				player_->OnCollision(shieldEnemy);
-
-				shieldEnemy->OnCollision(player_);
-			}
-		}
-	}
-#pragma endregion
 }
 
 bool GameScene::AABBCheckCollision(AABB& aabb1, AABB& aabb2) {
@@ -446,11 +397,11 @@ void GameScene::ChangePhase() {
 void GameScene::CreateHitEffect(KamataEngine::Vector3 pos) {
 
 	HitEffect* newHitEffect = HitEffect::Create(pos);
-	hitEffects_.push_back(newHitEffect);
+	effects_.push_back(newHitEffect);
 }
 
 void GameScene::CreateGuardEffect(KamataEngine::Vector3 pos) {
 
 	GuardEffect* newGuardEffect = GuardEffect::Create(pos);
-	guardEffects_.push_back(newGuardEffect);
+	effects_.push_back(newGuardEffect);
 }

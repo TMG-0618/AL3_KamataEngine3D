@@ -1,11 +1,12 @@
 #pragma once
 #include "AABB.h"
 #include "KamataEngine.h"
+#include"BaseEnemy.h"
 
 class Player;
 class GameScene;
 
-class ShieldEnemy {
+class ShieldEnemy final : public BaseEnemy {
 
 public:
 	enum class ShieldLRDirection {
@@ -56,14 +57,14 @@ public:
 	ShieldEnemy();
 	~ShieldEnemy();
 
-	void Initialize(KamataEngine::Model* model, KamataEngine::Camera* camera, const KamataEngine::Vector3& position);
-	void Update();
-	void Draw();
+	void Initialize(KamataEngine::Model* model, KamataEngine::Camera* camera, const KamataEngine::Vector3& position) override;
+	void Update() override;
+	void Draw() override;
 
 	KamataEngine::Vector3 GetWorldPosition();
-	AABB GetAABB();
+	AABB GetAABB() override;
 
-	void OnCollision(Player* player);
+	void OnCollision( Player* player) override;
 
 	bool IsDead() { return isDead_; }
 	bool IsCollisionDisabled() { return isCollisionDisabled_; }

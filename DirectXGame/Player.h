@@ -9,8 +9,7 @@ enum class LRDirection {
 
 class MapChipField;
 
-class Enemy;
-class ShieldEnemy;
+class BaseEnemy;
 class CameraController;
 
 class Player {
@@ -139,8 +138,7 @@ public:
 	AABB GetAABB();
 
 
-	void OnCollision(const Enemy* enemy);
-	void OnCollision(const ShieldEnemy* enemy);
+	void OnCollision(const BaseEnemy* enemy);
 
 	bool IsDead() const { return isDead_; }
 	

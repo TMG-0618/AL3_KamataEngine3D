@@ -2,15 +2,13 @@
 #include "AABB.h"
 #include "CameraController.h"
 #include "DeathParticles.h"
-#include "Enemy.h"
 #include "Fade.h"
 #include "KamataEngine.h"
 #include "MapChipField.h"
 #include "Player.h"
 #include "Skydome.h"
-#include"HitEffect.h"
-#include"ShieldEnemy.h"
-#include"GuardEffect.h"
+#include"BaseEnemy.h"
+#include"BaseEffect.h"
 #include <memory>
 #include <vector>
 
@@ -21,7 +19,7 @@ enum class Phase {
 	kFadeOut,
 };
 
-class GameScene {
+class GameScene final {
 
 private:
 	KamataEngine::Model* model_ = nullptr;
@@ -40,10 +38,10 @@ private:
 	MapChipField* mapChipField_;
 	CameraController* cameraController_ = nullptr;
 
-	std::list<Enemy*> enemies_;
+	std::list<BaseEnemy*> enemies_;
+
 	KamataEngine::Model* modelEnemy_ = nullptr;
 
-	std::list<ShieldEnemy*> shieldEnemies_;
 	KamataEngine::Model* modelShieldEnemy_ = nullptr;
 
 	DeathParticles* deathParticles_ = nullptr;
@@ -55,11 +53,9 @@ private:
 
 	bool finished_ = false;
 
+	std::list<BaseEffect*> effects_;
 	KamataEngine::Model* modelHitEffect_ = nullptr;
-	std::list<HitEffect*> hitEffects_;
-
 	KamataEngine::Model* modelGuardEffect_ = nullptr;
-	std::list<GuardEffect*> guardEffects_;
 
 public:
 	GameScene();
@@ -83,3 +79,4 @@ public:
 	void CreateGuardEffect(KamataEngine::Vector3 pos);
 
 };
+

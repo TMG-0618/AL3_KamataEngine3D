@@ -1,7 +1,9 @@
 #pragma once
 #include "KamataEngine.h"
 #include "Random.h"
-class HitEffect {
+#include "BaseEffect.h"
+
+class HitEffect final : public BaseEffect {
 
 public:
 	enum class Status {
@@ -35,9 +37,9 @@ public:
 
 	void Initialize(KamataEngine::Vector3 pos);
 
-	void Update();
+	void Update() override;
 
-	void Draw();
+	void Draw() override;
 
 	static void SetModel(KamataEngine::Model* model) { model_ = model; }
 	static void SetCamera(KamataEngine::Camera* camera) { camera_ = camera; }

@@ -1,11 +1,12 @@
 #pragma once
 #include "AABB.h"
 #include "KamataEngine.h"
+#include"BaseEnemy.h"
 
 class Player;
 class GameScene;
 
-class Enemy {
+class Enemy final : public BaseEnemy {
 
 private:
 
@@ -47,14 +48,14 @@ public:
 	Enemy();
 	~Enemy();
 
-	void Initialize(KamataEngine::Model* model, KamataEngine::Camera* camera, const KamataEngine::Vector3& position);
-	void Update();
-	void Draw();
+	void Initialize(KamataEngine::Model* model, KamataEngine::Camera* camera, const KamataEngine::Vector3& position) override;
+	void Update() override;
+	void Draw() override;
 
 	KamataEngine::Vector3 GetWorldPosition();
 	AABB GetAABB();
 
-	void OnCollision(const Player* player);
+	void OnCollision(Player* player) override;
 
 	bool IsDead() { return isDead_; }
 	bool IsCollisionDisabled() { return isCollisionDisabled_; }

@@ -486,23 +486,9 @@ AABB Player::GetAABB() {
 	return aabb;
 }
 
-void Player::OnCollision(const Enemy* enemy) {
+void Player::OnCollision(const BaseEnemy* enemy) {
 
 	(void)enemy;
-
-	if (IsAttack()) {
-
-		return;
-	}
-
-	// velocity_ = MyMath::Add(velocity_, Vector3({0.0f, 0.0f, 0.0f}));
-
-	isDead_ = true;
-}
-
-void Player::OnCollision(const ShieldEnemy* shieldEnemy) {
-
-	(void)shieldEnemy;
 
 	if (IsAttack()) {
 
