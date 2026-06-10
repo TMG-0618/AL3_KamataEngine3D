@@ -4,6 +4,7 @@
 #include <Windows.h>
 #include"StageManager.h"
 #include<fstream>
+#include"GlobalVariables.h"
 
 using namespace KamataEngine;
 
@@ -65,6 +66,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 		imguiManager->Begin();
 		UpdateScene();
+
+		GlobalVariables::GetInstance()->Update();
+
 		imguiManager->End();
 
 		// 描画開始地点
