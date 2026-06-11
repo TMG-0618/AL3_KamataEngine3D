@@ -6,6 +6,7 @@
 #include "ShieldEnemy.h"
 #include<imgui.h>
 #include"StageManager.h"
+#include"GlobalVariables.h"
 
 using namespace KamataEngine;
 
@@ -147,6 +148,10 @@ void GameScene::Update() {
 		if (Input::GetInstance()->TriggerKey(DIK_C)) {
 
 			isDebugCameraActive_ = !isDebugCameraActive_;
+		}
+
+		if (Input::GetInstance()->TriggerKey(DIK_J)) {
+			GlobalVariables::GetInstance()->SaveFile("Player");
 		}
 #endif
 

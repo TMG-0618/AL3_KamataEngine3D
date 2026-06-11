@@ -2,7 +2,12 @@
 #include"KamataEngine.h"
 #include <variant>
 #include<map>
+#include<json.hpp>
+
+
 class GlobalVariables {
+
+	using json = nlohmann::json;
 
 public:
 
@@ -15,6 +20,8 @@ public:
 	void SetValue(const std::string& groupName, const std::string& key, const KamataEngine::Vector3& value);
 
 	void Update();
+
+	void SaveFile(const std::string& groupName);
 
 private:
 
@@ -30,6 +37,8 @@ private:
 	struct Group {
 		std::map<std::string, Item> items;
 	};
+
 	std::map<std::string, Group> datas_;
 
+	const std::string kDirectoryPath = "Resources/GlobalVariables/";
 };
