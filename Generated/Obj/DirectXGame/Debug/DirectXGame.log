@@ -1,2 +1,4 @@
-﻿  GlobalVariables.cpp
+﻿  Enemy.cpp
+  GameScene.cpp
+  Player.cpp
   DirectXGame.vcxproj -> C:\Users\mizuk\Desktop\AL3_KamataEngine3D\Generated\Outputs\Debug\DirectXGame.exe

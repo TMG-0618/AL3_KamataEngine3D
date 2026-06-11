@@ -49,7 +49,7 @@ private:
 		kRecovery,
 	};
 
-	KamataEngine::WorldTransform worldTransform_;
+	static inline KamataEngine::WorldTransform worldTransform_;
 	KamataEngine::Model* model_ = nullptr;
 	KamataEngine::Camera* camera_ = nullptr;
 
@@ -58,7 +58,7 @@ private:
 	uint32_t textureHandle_ = 0u;
 
 	KamataEngine::Vector3 velocity_ = {};
-	static inline const float kAcceleration = 0.01f;
+	static inline float kAcceleration = 0.01f;
 	static inline const float kAttenuation = 0.02f;
 	static inline const float kLimitRunSpeed = 0.5f;
 
@@ -159,4 +159,7 @@ public:
 	LRDirection GetLRDirection()const { return lrDirection_; }
 
 	void RequestKnockBack() { isRequestKnockback_ = true; }
+
+	static void RegisterGlobalVariables();
+	static void ApplyGlobalVariables();
 };

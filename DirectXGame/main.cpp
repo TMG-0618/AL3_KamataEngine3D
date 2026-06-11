@@ -1,16 +1,16 @@
 #include "GameScene.h"
+#include "GlobalVariables.h"
 #include "KamataEngine.h"
+#include "StageManager.h"
 #include "TitleScene.h"
 #include <Windows.h>
-#include"StageManager.h"
-#include<fstream>
-#include"GlobalVariables.h"
+#include <fstream>
 
 using namespace KamataEngine;
 
 enum class Scene {
 	kUnknown = 0,
-	
+
 	kTitle,
 	kGame,
 };
@@ -20,7 +20,7 @@ GameScene* gameScene = nullptr;
 TitleScene* titleScene = nullptr;
 StageManager* stageManager = nullptr;
 
-//プロトタイプ宣言
+// プロトタイプ宣言
 void ChangeScene();
 void UpdateScene();
 void DrawScene();
@@ -41,6 +41,8 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 	LoadDebugSettings();
 
+	GlobalVariables::GetInstance()->LoadFiles();
+
 	scene = Scene::kGame;
 	gameScene = new GameScene();
 	gameScene->Initialize(stageManager);
@@ -48,7 +50,6 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 #endif
 	titleScene = new TitleScene();
 	titleScene->Initialize();
-
 
 	// ループ
 	while (true) {
@@ -66,9 +67,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 		imguiManager->Begin();
 		UpdateScene();
-
+#ifdef _DEBUG
 		GlobalVariables::GetInstance()->Update();
-
+#endif
 		imguiManager->End();
 
 		// 描画開始地点
@@ -138,8 +139,6 @@ void ChangeScene() {
 
 void UpdateScene() {
 
-
-
 	switch (scene) {
 
 	case Scene::kTitle:
@@ -154,8 +153,6 @@ void UpdateScene() {
 
 		break;
 	}
-
-
 }
 
 void DrawScene() {
@@ -176,7 +173,7 @@ void DrawScene() {
 	}
 }
 
-void LoadDebugSettings() { 
+void LoadDebugSettings() {
 	std::ifstream file;
 	file.open("debugSettings.ini");
 

@@ -18,15 +18,6 @@ void Player::Initialize(Model* model, Model* modelAttack, Camera* camera, const 
 
 	assert(model);
 
-	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
-	const char* groupName = "Player";
-
-	GlobalVariables::GetInstance()->CreateGroup(groupName);
-
-	globalVariables->SetValue(groupName, "Test",90);
-	globalVariables->SetValue(groupName, "TestFloat",90.0f);
-	globalVariables->SetValue(groupName, "TestVector3", Vector3(90.0f, 90.0f, 90.0f));
-
 	model_ = model;
 	modelAttack_ = modelAttack;
 	camera_ = camera;
@@ -776,4 +767,18 @@ void Player::ClampToScreen() {
 			}
 		}
 	}
+}
+
+void Player::RegisterGlobalVariables() {
+	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
+	const char* groupName = "Player";
+	globalVariables->CreateGroup(groupName);
+	globalVariables->AddValue(groupName, "Acceleration", kAcceleration);
+}
+
+void Player::ApplyGlobalVariables() {
+	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
+	const char* groupName = "Player";
+	kAcceleration = globalVariables->GetFloatValue(groupName, "Acceleration");
+
 }

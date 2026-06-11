@@ -4,6 +4,7 @@
 #include "Player.h"
 #include <assert.h>
 #include <numbers>
+#include"GlobalVariables.h"
 
 using namespace KamataEngine;
 
@@ -153,4 +154,17 @@ void Enemy::BehaviorDeathUpdate() {
 	}
 
 	// isDead_ = true;
+}
+
+void Enemy::RegisterGlobalVariables() {
+	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
+	const char* groupName = "Enemy";
+	globalVariables->CreateGroup(groupName);
+	globalVariables->AddValue(groupName, "WalkSpeed", kWalkSpeed);
+}
+
+void Enemy::ApplyGlobalVariables() {
+	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
+	const char* groupName = "Enemy";
+	kWalkSpeed = globalVariables->GetFloatValue(groupName, "WalkSpeed");
 }

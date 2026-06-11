@@ -59,6 +59,9 @@ void GameScene::Initialize(StageManager* stageManager) {
 	// マップチップからフィールドオブジェクト生成
 	GenerateFieldObjects();
 
+	Player::RegisterGlobalVariables();
+	Enemy::RegisterGlobalVariables();
+
 	deathParticles_ = new DeathParticles();
 	modelDeathParticles_ = Model::CreateFromOBJ("deathParticle", true);
 	deathParticles_->Initialize(modelDeathParticles_, camera_, player_->GetWorldPosition());
@@ -116,6 +119,9 @@ void GameScene::Initialize(StageManager* stageManager) {
 }
 
 void GameScene::Update() {
+
+	Player::ApplyGlobalVariables();
+	Enemy::ApplyGlobalVariables();
 
 #ifdef _DEBUG
 

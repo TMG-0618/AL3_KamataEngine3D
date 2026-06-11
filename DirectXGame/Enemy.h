@@ -16,11 +16,11 @@ private:
 		kDeath,
 	};
 
-	KamataEngine::WorldTransform worldTransform_;
+	static inline KamataEngine::WorldTransform worldTransform_;
 	KamataEngine::Model* model_ = nullptr;
 	KamataEngine::Camera* camera_ = nullptr;
 
-	static inline const float kWalkSpeed = 0.02f;
+	static inline float kWalkSpeed = 0.02f;
 
 	KamataEngine::Vector3 velocity_ = {};
 
@@ -28,7 +28,7 @@ private:
 	static inline const float kWalkMotionAngleEnd = 15.0f;
 	static inline const float kWalkMotionTime = 1.0f;
 
-	float walkTimer_ = 0.0f;
+	static inline float walkTimer_ = 0.0f;
 
 	static inline const float kWidth = 0.8f;
 	static inline const float kHeight = 0.8f;
@@ -67,4 +67,7 @@ public:
 	void BehaviorDeathUpdate();
 
 	void SetGameScene(GameScene* gameScene) { gameScene_ = gameScene; }
+
+	static void RegisterGlobalVariables();
+	static void ApplyGlobalVariables();
 };

@@ -19,9 +19,21 @@ public:
 	void SetValue(const std::string& groupName, const std::string& key, float value);
 	void SetValue(const std::string& groupName, const std::string& key, const KamataEngine::Vector3& value);
 
+	void AddValue(const std::string& groupName, const std::string& key, int32_t value);
+	void AddValue(const std::string& groupName, const std::string& key, float value);
+	void AddValue(const std::string& groupName, const std::string& key, const KamataEngine::Vector3& value);
+
 	void Update();
 
 	void SaveFile(const std::string& groupName);
+
+	void LoadFiles();
+
+	void LoadFile(const std::string& groupName);
+
+	int32_t GetIntValue(const std::string& groupName, const std::string& key) const;
+	float GetFloatValue(const std::string& groupName, const std::string& key) const;
+	KamataEngine::Vector3 GetVector3Value(const std::string& groupName, const std::string& key) const;
 
 private:
 
